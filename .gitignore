@@ -1,0 +1,112 @@
+# =============================================================================
+# .gitignore — purchase-bill-management
+# =============================================================================
+# Single source of truth for the whole monorepo (one .gitignore at repo root):
+#   backend/PurchaseBillManagement.Api     .NET 8 / ASP.NET Core Web API
+#   frontend/purchase-bill-management-ui   Angular 22 app
+#   database                               SQL scripts / migrations (reserved)
+#
+# Rules are grouped by tech stack / concern per industry convention.
+# This file fully supersedes the Angular CLI default .gitignore.
+
+# ---------------------------------------------------------------------------
+# .NET 8 / ASP.NET Core (backend/PurchaseBillManagement.Api)
+# ---------------------------------------------------------------------------
+
+# Build output (bin/, obj/ match at any module level)
+bin/
+obj/
+out/
+
+# Visual Studio solution/user state
+.vs/
+*.csproj.user
+*.sln.user
+*.suo
+*.user
+
+# NuGet packages
+*.nupkg
+*.snupkg
+
+# Test & coverage output
+TestResults/
+coverage/
+*.trx
+
+# Logs
+*.log
+
+# ---------------------------------------------------------------------------
+# Node.js / Angular (frontend/purchase-bill-management-ui)
+# ---------------------------------------------------------------------------
+
+# Dependencies & compiled output
+node_modules/
+dist/
+tmp/
+out-tsc/
+bazel-out/
+.angular/
+*.tsbuildinfo
+npm-debug.log
+yarn-error.log
+
+# Angular tooling artifacts
+.sass-cache/
+connect.lock
+libpeerconnection.log
+testem.log
+typings/
+__screenshots__/
+
+# ---------------------------------------------------------------------------
+# Environment / secrets — never commit real credentials
+# ---------------------------------------------------------------------------
+
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+
+# ---------------------------------------------------------------------------
+# IDEs & editors
+# ---------------------------------------------------------------------------
+
+# IntelliJ / JetBrains
+.idea/
+*.iml
+
+# Eclipse / Cloud9 / Sublime Text
+.project
+.classpath
+.c9/
+*.launch
+.settings/
+*.sublime-workspace
+
+# Visual Studio Code
+# Ignore folder contents only (not the folder itself) so whitelisted files
+# (settings/tasks/launch/extensions/mcp) can still be tracked.
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+!.vscode/mcp.json
+.history/*
+
+# ---------------------------------------------------------------------------
+# OS junk / temp files
+# ---------------------------------------------------------------------------
+
+.DS_Store
+Thumbs.db
+desktop.ini
+ehthumbs.db
+*.swp
+*.swo
+*~
+*.tmp

@@ -38,7 +38,7 @@ namespace PurchaseBillManagement.Api.Services
         public async Task<LoginResponseDto> LoginAsync(LoginRequestDto request, CancellationToken cancellationToken = default)
         {
             var posResponse = await _externalApiClient.GetLoginDataAsync(
-                request.CompanyCode, request.Username, request.Pw, cancellationToken);
+                request.Username, request.Password, cancellationToken);
 
             if (posResponse is null
                 || posResponse.StatusCode != 200
@@ -58,7 +58,6 @@ namespace PurchaseBillManagement.Api.Services
                 UserCode = user.UserCode ?? string.Empty,
                 UserDisplayName = user.UserDisplayName ?? string.Empty,
                 Email = user.Email ?? string.Empty,
-                CompanyCode = user.CompanyCode ?? string.Empty,
                 Locations = (user.UserLocations ?? new List<PosLocation>())
                     .Where(l => !string.IsNullOrWhiteSpace(l.LocationCode))
                     .Select(l => new LocationDto

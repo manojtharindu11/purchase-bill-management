@@ -1,0 +1,111 @@
+<div class="min-h-screen bg-slate-100 px-4 py-8">
+  <div class="mx-auto w-full max-w-5xl space-y-6">
+    <header class="flex flex-wrap items-center justify-between gap-3">
+      <div>
+        <h1 class="text-2xl font-semibold text-slate-900">Purchase Bill</h1>
+        <p class="text-sm text-slate-500">
+          Signed in as {{ auth.currentUser()?.userDisplayName ?? auth.currentUser()?.email }}
+        </p>
+      </div>
+      <button
+        type="button"
+        (click)="logout()"
+        class="rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700 shadow-sm hover:bg-slate-50"
+      >
+        Logout
+      </button>
+    </header>
+
+    @if (loadError()) {
+      <div role="alert" class="rounded-lg bg-red-50 px-4 py-3 text-sm text-red-700">
+        {{ loadError() }}
+      </div>
+    }
+
+    @if (success(); as bill) {
+      <div role="status" class="rounded-lg bg-green-50 px-4 py-3 text-sm text-green-800">
+        Bill <strong>{{ bill.billNumber }}</strong> saved.
+      </div>
+    }
+
+    @if (submitError()) {
+      <div role="alert" class="rounded-lg bg-red-50 px-4 py-3 text-sm text-red-700">
+        {{ submitError() }}
+      </div>
+    }
+
+    <section class="rounded-2xl bg-white p-6 shadow-sm">
+      <h2 class="text-base font-semibold text-slate-900">Bill Details</h2>
+      <form [formGroup]="billForm" class="mt-4 grid gap-4 sm:grid-cols-2">
+        <div>
+          <label for="batch" class="mb-1 block text-sm font-medium text-slate-700">
+            Batch (Location)
+          </label>
+          <select
+            id="batch"
+            formControlName="batchLocationName"
+            class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+          >
+            <option value="" disabled>Select a location…</option>
+            @for (loc of locations(); track loc.locationCode) {
+              <option [value]="loc.locationName">{{ loc.locationName }}</option>
+            }
+          </select>
+          @if (billForm.controls.batchLocationName.touched && billForm.controls.batchLocationName.invalid) {
+            <p class="mt-1 text-xs text-red-600">Batch location is required.</p>
+          }
+        </div>
+      </form>
+    </section>
+
+    <section class="rounded-2xl bg-white p-6 shadow-sm">
+      <h2 class="text-base font-semibold text-slate-900">Add Item</h2>
+      <form [formGroup]="itemForm" (ngSubmit)="addItem()" class="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div class="lg:col-span-1">
+          <label for="itemName" class="mb-1 block text-sm font-medium text-slate-700">Item</label>
+          <app-autocomplete
+            [options]="itemOptions"
+            [value]="itemForm.controls.itemName.value"
+            (valueChange)="onItemNameChange($event)"
+            placeholder="Mango, Apple, Banana…"
+          />
+          @if (itemForm.controls.itemName.touched && itemForm.controls.itemName.invalid) {
+            <p class="mt-1 text-xs text-red-600">
+              @if (itemForm.controls.itemName.errors?.['required']) {
+                Item is required.
+              } @else if (itemForm.controls.itemName.errors?.['notAllowed']) {
+                Choose one of: Mango, Apple, Banana, Orange, Grapes.
+              }
+            </p>
+          }
+        </div>
+
+        <div>
+          <label for="standardCost" class="mb-1 block text-sm font-medium text-slate-700">Standard Cost</label>
+          <input
+            id="standardCost"
+            type="number"
+            min="0"
+            step="0.01"
+            formControlName="standardCost"
+            class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+          />
+          @if (itemForm.controls.standardCost.touched && itemForm.controls.standardCost.invalid) {
+            <p class="mt-1 text-xs text-red-600">Enter a cost of 0 or more.</p>
+          }
+        </div>
+
+        <div>
+          <label for="standardPrice" class="mb-1 block text-sm font-medium text-slate-700">Standard Price</label>
+          <input
+            id="standardPrice"
+            type="number"
+            min="0"
+            step="0.01"
+            formControlName="standardPrice"
+            class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+          />
+          @if (itemForm.controls.standardPrice.touched && itemForm.controls.standardPrice.invalid) {
+            <p class="mt-1 text-xs text-red-600">Enter a price of 0 or more.</p>
+          }
+        </div>

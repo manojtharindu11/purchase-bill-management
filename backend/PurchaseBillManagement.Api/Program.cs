@@ -1,4 +1,4 @@
-﻿using System.Text;
+using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -9,7 +9,12 @@ using PurchaseBillManagement.Api.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase;
+        options.JsonSerializerOptions.DictionaryKeyPolicy = System.Text.Json.JsonNamingPolicy.CamelCase;
+    });
 builder.Services.AddEndpointsApiExplorer();
 
 // SQL Server (Docker)
@@ -37,11 +42,14 @@ builder.Services
     });
 builder.Services.AddAuthorization();
 
-// CORS for the Angular dev server (later stage)
+// CORS for the Angular dev server (http + 127.0.0.1 variants).
+// NOTE: with proxy.conf.json active, the browser never hits the API
+// cross-origin at all (/api -> proxy -> :5104). This policy is the
+// safety net for direct calls (Swagger, curl, mobile, etc.).
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAngularDevServer", policy =>
-        policy.WithOrigins("http://localhost:4200")
+        policy.WithOrigins("http://localhost:4200", "http://127.0.0.1:4200")
               .AllowAnyHeader()
               .AllowAnyMethod());
 });
@@ -91,10 +99,12 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI(options => options.SwaggerEndpoint("/swagger/v1/swagger.json", "Purchase Bill Management API v1"));
 }
 
+// CORS must run before response-altering middleware and auth so the
+// browser preflight (OPTIONS) from http://localhost:4200 succeeds.
+app.UseCors("AllowAngularDevServer");
+
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 
-app.UseHttpsRedirection();
-app.UseCors("AllowAngularDevServer");
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();

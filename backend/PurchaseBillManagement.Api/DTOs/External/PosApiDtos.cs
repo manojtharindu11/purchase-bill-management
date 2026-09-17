@@ -22,7 +22,7 @@ namespace PurchaseBillManagement.Api.DTOs.External
     public class PosLoginRequestBody
     {
         [JsonPropertyName("Username")] public string Username { get; set; } = string.Empty;
-        [JsonPropertyName("Pw")] public string Pw { get; set; } = string.Empty;
+        [JsonPropertyName("Pw")] public string Password { get; set; } = string.Empty;
     }
 
     public class PosLoginUser

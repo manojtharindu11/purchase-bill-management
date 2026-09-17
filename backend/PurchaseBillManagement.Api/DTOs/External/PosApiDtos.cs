@@ -10,6 +10,21 @@ namespace PurchaseBillManagement.Api.DTOs.External
         [JsonPropertyName("Response_Body")] public T? ResponseBody { get; set; }
     }
 
+    public class PosLoginRequestDto
+    {
+        [JsonPropertyName("API_Action")] public string ApiAction { get; set; } = string.Empty;
+        [JsonPropertyName("Device_Id")] public string DeviceId { get; set; } = string.Empty;
+        [JsonPropertyName("Sync_Time")] public string SyncTime { get; set; } = string.Empty;
+        [JsonPropertyName("Company_Code")] public string CompanyCode { get; set; } = string.Empty;
+        [JsonPropertyName("API_Body")] public PosLoginRequestBody ApiBody { get; set; } = new();
+    }
+
+    public class PosLoginRequestBody
+    {
+        [JsonPropertyName("Username")] public string Username { get; set; } = string.Empty;
+        [JsonPropertyName("Pw")] public string Pw { get; set; } = string.Empty;
+    }
+
     public class PosLoginUser
     {
         [JsonPropertyName("User_Code")] public string? UserCode { get; set; }

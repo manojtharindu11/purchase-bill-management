@@ -30,17 +30,20 @@ namespace PurchaseBillManagement.Api.Services
                 return BuildMockLoginResponse();
             }
 
-            var method = _configuration["ExternalApi:LoginMethod"] ?? "GetLoginData";
-
-            var form = new Dictionary<string, string>
+            var requestBody = new PosLoginRequestDto
             {
-                ["Method"] = method,
-                ["Company_Code"] = companyCode,
-                ["Username"] = username,
-                ["Pw"] = password
+                ApiAction = _configuration["ExternalApi:LoginMethod"] ?? "GetLoginData",
+                DeviceId = _configuration["ExternalApi:DeviceId"] ?? "D001",
+                SyncTime = string.Empty,
+                CompanyCode = companyCode,
+                ApiBody = new PosLoginRequestBody
+                {
+                    Username = username,
+                    Pw = password
+                }
             };
 
-            using var requestContent = new FormUrlEncodedContent(form);
+            using var requestContent = JsonContent.Create(requestBody, options: JsonOptions);
             using var response = await _httpClient.PostAsync(
                 "api/External_Api/POS_Api/Invoke", requestContent, cancellationToken);
 
@@ -53,7 +56,7 @@ namespace PurchaseBillManagement.Api.Services
             return await response.Content.ReadFromJsonAsync<PosApiResponse<List<PosLoginUser>>>(JsonOptions, cancellationToken);
         }
 
-        // Mirror of the real "GetLoginData" response (trimmed to a few locations for testing).
+        // Mirror of the real "GetLoginData" response (trimmed to a few locations for offline testing).
         private static PosApiResponse<List<PosLoginUser>> BuildMockLoginResponse() => new()
         {
             StatusCode = 200,

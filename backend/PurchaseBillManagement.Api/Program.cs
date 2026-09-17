@@ -46,7 +46,7 @@ builder.Services.AddCors(options =>
               .AllowAnyMethod());
 });
 
-// External POS API client (mock-first)
+// External POS API client
 var externalApiBaseUrl = builder.Configuration["ExternalApi:BaseUrl"]
     ?? throw new InvalidOperationException("ExternalApi:BaseUrl is not configured.");
 builder.Services.AddHttpClient<ExternalPosApiClient>(client => client.BaseAddress = new Uri(externalApiBaseUrl));

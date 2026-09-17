@@ -53,6 +53,8 @@ builder.Services.AddHttpClient<ExternalPosApiClient>(client => client.BaseAddres
 
 // Application services
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<ILocationService, LocationService>();
+builder.Services.AddScoped<IPurchaseBillService, PurchaseBillService>();
 
 // Swagger
 builder.Services.AddSwaggerGen(options =>

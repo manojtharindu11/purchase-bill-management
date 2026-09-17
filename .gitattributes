@@ -1,0 +1,16 @@
+﻿# Normalize line endings across contributors
+* text=auto
+
+# Code & config: force LF for consistency
+*.cs text eol=lf
+*.csproj text eol=lf
+*.json text eol=lf
+*.ts text eol=lf
+*.html text eol=lf
+*.css text eol=lf
+
+# Executables / binaries
+*.png binary
+*.jpg binary
+*.ico binary
+*.pdf binary

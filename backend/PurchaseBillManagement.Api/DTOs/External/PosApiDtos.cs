@@ -32,6 +32,14 @@ namespace PurchaseBillManagement.Api.DTOs.External
         [JsonPropertyName("Email")] public string? Email { get; set; }
         [JsonPropertyName("Company_Code")] public string? CompanyCode { get; set; }
         [JsonPropertyName("User_Locations")] public List<PosLocation>? UserLocations { get; set; }
+
+        /// <summary>
+        /// Machine-readable outcome such as "Invalid Login Details".
+        /// IMPORTANT: the API returns Status_Code 200 even when authentication
+        /// fails, so this field - together with the presence of User_Code and
+        /// User_Locations - is what actually determines success or failure.
+        /// </summary>
+        [JsonPropertyName("Doc_Msg")] public string? DocMessage { get; set; }
     }
 
     public class PosLocation

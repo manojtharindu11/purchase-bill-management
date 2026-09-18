@@ -40,25 +40,48 @@ namespace PurchaseBillManagement.Api.Services
             var posResponse = await _externalApiClient.GetLoginDataAsync(
                 request.Username, request.Password, cancellationToken);
 
-            if (posResponse is null
-                || posResponse.StatusCode != 200
-                || posResponse.ResponseBody is not { Count: > 0 } users)
+            var user = posResponse?.ResponseBody?.FirstOrDefault();
+
+            // The external API answers HTTP/Status_Code 200 even when the
+            // credentials are rejected, so the outcome must be judged from the
+            // payload: a genuine success always carries a User_Code plus the
+            // User_Locations collection. Everything below is logged so a
+            // rejection can be diagnosed without guessing.
+            _logger.LogInformation(
+                "GetLoginData -> Status_Code={StatusCode}, Message={Message}, Doc_Msg={DocMessage}, User_Code={UserCode}, Locations={LocationCount}",
+                posResponse?.StatusCode,
+                posResponse?.Message,
+                user?.DocMessage,
+                user?.UserCode,
+                user?.UserLocations?.Count ?? 0);
+
+            var isAuthenticated = user is not null
+                && !string.IsNullOrWhiteSpace(user.UserCode)
+                && user.UserLocations is { Count: > 0 };
+
+            if (!isAuthenticated)
             {
-                _logger.LogWarning("Login failed for {Username}", request.Username);
-                throw new ApiException(StatusCodes.Status401Unauthorized, "Invalid email or password.");
+                var reason = string.IsNullOrWhiteSpace(user?.DocMessage)
+                    ? "Invalid email or password."
+                    : user!.DocMessage!;
+
+                _logger.LogWarning("Login rejected for {Username}: {Reason}", request.Username, reason);
+                throw new ApiException(StatusCodes.Status401Unauthorized, reason);
             }
 
-            var user = users[0];
+            // Non-null past the guard above; captured once so the rest of the
+            // method does not need null-forgiving operators.
+            var authenticatedUser = user!;
 
-            await UpsertLocationsAsync(user, cancellationToken);
+            await UpsertLocationsAsync(authenticatedUser, cancellationToken);
 
             return new LoginResponseDto
             {
-                Token = GenerateJwtToken(user),
-                UserCode = user.UserCode ?? string.Empty,
-                UserDisplayName = user.UserDisplayName ?? string.Empty,
-                Email = user.Email ?? string.Empty,
-                Locations = (user.UserLocations ?? new List<PosLocation>())
+                Token = GenerateJwtToken(authenticatedUser),
+                UserCode = authenticatedUser.UserCode ?? string.Empty,
+                UserDisplayName = authenticatedUser.UserDisplayName ?? string.Empty,
+                Email = authenticatedUser.Email ?? string.Empty,
+                Locations = (authenticatedUser.UserLocations ?? new List<PosLocation>())
                     .Where(l => !string.IsNullOrWhiteSpace(l.LocationCode))
                     .Select(l => new LocationDto
                     {

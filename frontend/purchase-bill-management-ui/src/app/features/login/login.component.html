@@ -4,63 +4,92 @@
     <p class="mt-1 text-sm text-slate-500">Sign in with your eZuite POS account.</p>
 
     @if (errorMessage()) {
-      <div role="alert" class="mt-4 rounded-lg bg-red-50 px-4 py-3 text-sm text-red-700">
-        {{ errorMessage() }}
-      </div>
+    <div role="alert" class="mt-4 rounded-lg bg-red-50 px-4 py-3 text-sm text-red-700">
+      {{ errorMessage() }}
+    </div>
     }
 
     <form [formGroup]="form" (ngSubmit)="submit()" class="mt-6 space-y-5" novalidate>
       <div>
-        <label for="username" class="mb-1 block text-sm font-medium text-slate-700">Email</label>
-        <input
-          id="username"
-          type="email"
-          autocomplete="username"
-          formControlName="username"
-          placeholder="info@enhanzer.com"
-          class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
-        />
+        <label for="username" class="mb-1 block text-sm font-medium text-slate-700">
+          Email <span class="text-red-600" aria-hidden="true">*</span>
+          <span class="sr-only">required</span>
+        </label>
+        <div class="relative">
+          <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2"
+            class="pointer-events-none absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400">
+            <path stroke-linecap="round" stroke-linejoin="round"
+              d="M4 6.5A2.5 2.5 0 016.5 4h11A2.5 2.5 0 0120 6.5v11a2.5 2.5 0 01-2.5 2.5h-11A2.5 2.5 0 014 17.5v-11z" />
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 6l7.5 6 7.5-6" />
+          </svg>
+          <input id="username" type="email" autocomplete="username" formControlName="username" placeholder="Email"
+            class="w-full rounded-lg border border-slate-300 py-2 pl-10 pr-3 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100" />
+        </div>
         @if (username.touched && username.invalid) {
-          <p class="mt-1 text-xs text-red-600">
-            @if (username.errors?.['required']) {
-              Email is required.
-            } @else if (username.errors?.['email']) {
-              Enter a valid email address.
-            }
-          </p>
+        <p class="mt-1 text-xs text-red-600">
+          @if (username.errors?.['required']) {
+          Email is required.
+          } @else if (username.errors?.['email']) {
+          Enter a valid email address.
+          }
+        </p>
         }
       </div>
 
       <div>
-        <label for="password" class="mb-1 block text-sm font-medium text-slate-700">Password</label>
-        <input
-          id="password"
-          type="password"
-          autocomplete="current-password"
-          formControlName="password"
-          placeholder="••••••••"
-          class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
-        />
-        @if (password.touched && password.invalid) {
-          <p class="mt-1 text-xs text-red-600">
-            @if (password.errors?.['required']) {
-              Password is required.
-            } @else if (password.errors?.['minlength']) {
-              Password must be at least 4 characters.
+        <label for="password" class="mb-1 block text-sm font-medium text-slate-700">
+          Password <span class="text-red-600" aria-hidden="true">*</span>
+          <span class="sr-only">required</span>
+        </label>
+        <div class="relative">
+          <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2"
+            class="pointer-events-none absolute left-3 top-1/2 z-10 h-5 w-5 -translate-y-1/2 text-slate-400">
+            <rect width="14" height="11" x="5" y="10" rx="2" />
+            <path stroke-linecap="round" d="M8 10V7a4 4 0 018 0v3" />
+            <path stroke-linecap="round" d="M12 14v3" />
+          </svg>
+          <input id="password" [type]="showPassword() ? 'text' : 'password'" autocomplete="current-password"
+            formControlName="password" placeholder="Password"
+            class="w-full rounded-lg border border-slate-300 py-2 pl-10 pr-10 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100" />
+          <button type="button" (click)="togglePasswordVisibility()"
+            [attr.aria-label]="showPassword() ? 'Hide password' : 'Show password'"
+            [attr.title]="showPassword() ? 'Hide password' : 'Show password'"
+            class="absolute inset-y-0 right-0 flex w-10 items-center justify-center text-slate-500 hover:text-slate-700">
+            @if (showPassword()) {
+            <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" class="h-5 w-5">
+              <path stroke-linecap="round" stroke-linejoin="round"
+                d="M3 3l18 18M10.584 10.587a2 2 0 002.829 2.829M9.88 4.24A9.77 9.77 0 0112 4c5.5 0 9.5 8 9.5 8a17.6 17.6 0 01-3.08 4.18M6.228 6.228C3.8 7.8 2.5 12 2.5 12S6.5 20 12 20a9.77 9.77 0 004.24-.96" />
+            </svg>
+            } @else {
+            <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" class="h-5 w-5">
+              <path stroke-linecap="round" stroke-linejoin="round"
+                d="M2.5 12S6.5 4 12 4s9.5 8 9.5 8-4 8-9.5 8-9.5-8-9.5-8z" />
+              <circle cx="12" cy="12" r="2.5" />
+            </svg>
             }
-          </p>
+          </button>
+        </div>
+        @if (password.touched && password.invalid) {
+        <p class="mt-1 text-xs text-red-600">
+          @if (password.errors?.['required']) {
+          Password is required.
+          } @else if (password.errors?.['minlength']) {
+          Password must be at least 4 characters.
+          }
+        </p>
         }
       </div>
 
-      <button
-        type="submit"
-        [disabled]="loading.isLoading()"
-        class="w-full rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-blue-300"
-      >
+      <button type="submit" [disabled]="loading.isLoading()"
+        class="w-full rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-blue-300">
         @if (loading.isLoading()) {
-          Signing in…
+        Signing in…
         } @else {
-          Sign in
+        Sign in
         }
       </button>
     </form>

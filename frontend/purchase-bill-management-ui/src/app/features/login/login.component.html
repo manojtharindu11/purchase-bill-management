@@ -1,5 +1,5 @@
-<div class="min-h-screen bg-slate-100 flex items-center justify-center px-4 py-10">
-  <div class="w-full max-w-md rounded-2xl bg-white p-8 shadow-lg">
+<div class="flex min-h-screen items-center justify-center bg-slate-100 px-3 py-6 sm:px-4 sm:py-10">
+  <div class="w-full max-w-md rounded-2xl bg-white p-5 shadow-lg sm:p-8">
     <h1 class="text-2xl font-semibold text-slate-900">Purchase Bill Management</h1>
     <p class="mt-1 text-sm text-slate-500">Sign in with your eZuite POS account.</p>
 
@@ -11,20 +11,21 @@
 
     <form [formGroup]="form" (ngSubmit)="submit()" class="mt-6 space-y-5" novalidate>
       <div>
-        <label for="username" class="mb-1 block text-sm font-medium text-slate-700">
+        <label for="username"
+          class="mb-1 block truncate whitespace-nowrap text-[11px] font-medium uppercase tracking-wide text-slate-500">
           Email <span class="text-red-600" aria-hidden="true">*</span>
           <span class="sr-only">required</span>
         </label>
-        <div class="relative">
+        <div class="relative border-b-2 border-slate-300 focus-within:border-blue-500">
           <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
             stroke="currentColor" stroke-width="2"
-            class="pointer-events-none absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400">
+            class="pointer-events-none absolute left-0 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400">
             <path stroke-linecap="round" stroke-linejoin="round"
               d="M4 6.5A2.5 2.5 0 016.5 4h11A2.5 2.5 0 0120 6.5v11a2.5 2.5 0 01-2.5 2.5h-11A2.5 2.5 0 014 17.5v-11z" />
             <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 6l7.5 6 7.5-6" />
           </svg>
           <input id="username" type="email" autocomplete="username" formControlName="username" placeholder="Email"
-            class="w-full rounded-lg border border-slate-300 py-2 pl-10 pr-3 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100" />
+            class="w-full border-0 bg-transparent px-0 py-2 pl-7 text-sm outline-none focus:ring-0" />
         </div>
         @if (username.touched && username.invalid) {
         <p class="mt-1 text-xs text-red-600">
@@ -38,21 +39,22 @@
       </div>
 
       <div>
-        <label for="password" class="mb-1 block text-sm font-medium text-slate-700">
+        <label for="password"
+          class="mb-1 block truncate whitespace-nowrap text-[11px] font-medium uppercase tracking-wide text-slate-500">
           Password <span class="text-red-600" aria-hidden="true">*</span>
           <span class="sr-only">required</span>
         </label>
-        <div class="relative">
+        <div class="relative border-b-2 border-slate-300 focus-within:border-blue-500">
           <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
             stroke="currentColor" stroke-width="2"
-            class="pointer-events-none absolute left-3 top-1/2 z-10 h-5 w-5 -translate-y-1/2 text-slate-400">
+            class="pointer-events-none absolute left-0 top-1/2 z-10 h-5 w-5 -translate-y-1/2 text-slate-400">
             <rect width="14" height="11" x="5" y="10" rx="2" />
             <path stroke-linecap="round" d="M8 10V7a4 4 0 018 0v3" />
             <path stroke-linecap="round" d="M12 14v3" />
           </svg>
           <input id="password" [type]="showPassword() ? 'text' : 'password'" autocomplete="current-password"
             formControlName="password" placeholder="Password"
-            class="w-full rounded-lg border border-slate-300 py-2 pl-10 pr-10 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100" />
+            class="w-full border-0 bg-transparent px-0 py-2 pl-7 pr-10 text-sm outline-none focus:ring-0" />
           <button type="button" (click)="togglePasswordVisibility()"
             [attr.aria-label]="showPassword() ? 'Hide password' : 'Show password'"
             [attr.title]="showPassword() ? 'Hide password' : 'Show password'"

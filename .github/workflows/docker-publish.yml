@@ -1,0 +1,122 @@
+name: Docker Publish
+
+on:
+  push:
+    branches:
+      - main
+    # Only trigger the workflow if files in these directories change
+    paths:
+      - "backend/**"
+      - "frontend/**"
+      - "database/**"
+      - ".github/workflows/docker-publish.yml"
+
+jobs:
+  # Job 1: Detect which folders actually changed
+  detect-changes:
+    runs-on: ubuntu-latest
+    outputs:
+      backend: ${{ steps.filter.outputs.backend }}
+      frontend: ${{ steps.filter.outputs.frontend }}
+      database: ${{ steps.filter.outputs.database }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            backend:
+              - 'backend/**'
+            frontend:
+              - 'frontend/**'
+            database:
+              - 'database/**'
+
+  # Job 2: Build & Push Backend
+  build-backend:
+    needs: detect-changes
+    if: ${{ needs.detect-changes.outputs.backend == 'true' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and push backend image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./backend/PurchaseBillManagement.Api
+          push: true
+          tags: |
+            ${{ secrets.DOCKERHUB_USERNAME }}/purchase-bill-management-backend:latest
+            ${{ secrets.DOCKERHUB_USERNAME }}/purchase-bill-management-backend:${{ github.sha }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  # Job 3: Build & Push Frontend
+  build-frontend:
+    needs: detect-changes
+    if: ${{ needs.detect-changes.outputs.frontend == 'true' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and push frontend image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./frontend/purchase-bill-management-ui
+          push: true
+          build-args: |
+            VITE_API_URL=https://job-application-tracker-backend-latest.onrender.com
+          tags: |
+            ${{ secrets.DOCKERHUB_USERNAME }}/purchase-bill-management-frontend:latest
+            ${{ secrets.DOCKERHUB_USERNAME }}/purchase-bill-management-frontend:${{ github.sha }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  # Job 4: Build & Push Database Schema Image
+  build-database:
+    needs: detect-changes
+    if: ${{ needs.detect-changes.outputs.database == 'true' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and push database image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./database
+          push: true
+          tags: |
+            ${{ secrets.DOCKERHUB_USERNAME }}/purchase-bill-management-database:latest
+            ${{ secrets.DOCKERHUB_USERNAME }}/purchase-bill-management-database:${{ github.sha }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max

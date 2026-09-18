@@ -64,30 +64,30 @@ flowchart LR
 ## Repository Structure
 
 ```text
-backend/PurchaseBillManagement.Api/
-  Controllers/       API endpoints
-  Data/              EF Core DbContext
-  DTOs/              Request, response, and external API contracts
-  Middleware/        Exception handling and traceable API errors
-  Migrations/        EF Core schema migration and snapshot
-  Models/            Database entities
-  Services/          Authentication, locations, bills, and POS client
-  Dockerfile         Multi-stage .NET 8 image
-
-frontend/purchase-bill-management-ui/
-  src/app/           Angular application
-  public/             Static assets
-  Dockerfile          Angular build plus Nginx runtime image
-  nginx.conf          SPA hosting and API proxy configuration
-  docker-entrypoint.sh Runtime API URL substitution for Nginx
-
-database/
-  Dockerfile          SQL Server image definition
-  purchase_bill_management.sql  Current database initialization script
-
-docker-compose.yml    Local multi-container environment
-.env.example          Environment variable template
-Screen recording.mkv   Project walkthrough
+.
+├── backend/
+│   └── PurchaseBillManagement.Api/
+│       ├── Controllers/       API endpoints
+│       ├── Data/              EF Core DbContext
+│       ├── DTOs/              Request and response contracts
+│       ├── Middleware/        Exception handling and traceable errors
+│       ├── Migrations/        EF Core migration and model snapshot
+│       ├── Models/            Database entities
+│       ├── Services/          Authentication, locations, bills, POS client
+│       └── Dockerfile         Multi-stage .NET 8 image
+├── frontend/
+│   └── purchase-bill-management-ui/
+│       ├── src/app/            Angular application
+│       ├── public/             Static assets
+│       ├── Dockerfile          Angular build and Nginx runtime image
+│       ├── nginx.conf          SPA hosting and API proxy configuration
+│       └── docker-entrypoint.sh Runtime API URL substitution for Nginx
+├── database/
+│   ├── Dockerfile              SQL Server image definition
+│   └── purchase_bill_management.sql Current database schema
+├── docker-compose.yml          Local multi-container environment
+├── .env.example                Environment variable template
+└── Screen recording.mkv        Project walkthrough
 ```
 
 ## Prerequisites
@@ -360,7 +360,7 @@ Ensure the token was created with the current values of `Jwt__Key`, `Jwt__Issuer
 
 ## Video
 
-[[![Watch the Purchase Bill Management walkthrough](https://img.youtube.com/vi/v6XOkbO_4QU/maxresdefault.jpg)](https://youtu.be/v6XOkbO_4QU)](https://github.com/user-attachments/assets/edc7a097-a6d5-445f-8d0a-702ac8083615)
+[![Watch the Purchase Bill Management walkthrough](https://img.youtube.com/vi/v6XOkbO_4QU/maxresdefault.jpg)](https://youtu.be/v6XOkbO_4QU)
 
 The original recording is also available as [Screen recording.mkv](Screen%20recording.mkv).
 

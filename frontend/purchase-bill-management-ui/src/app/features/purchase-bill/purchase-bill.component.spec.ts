@@ -57,7 +57,7 @@ describe('PurchaseBillComponent', () => {
     enter('#standardPrice', '150');
     enter('#quantity', '5');
     enter('#discountPercent', '20');
-    click('Add Item');
+    click('Add +');
   }
 
   it('updates the preview when form values change', () => {
@@ -90,20 +90,18 @@ describe('PurchaseBillComponent', () => {
 
   it('submits inputs without trusting client totals and prevents duplicate clicks', () => {
     addMango();
-    const batch = element.querySelector<HTMLSelectElement>('#batch')!;
-    batch.value = batch.options[1].value;
-    batch.dispatchEvent(new Event('change', { bubbles: true }));
-    fixture.detectChanges();
     click('Save Purchase Bill');
     expect(api.createBill).toHaveBeenCalledExactlyOnceWith({
-      batchLocationName: 'Head Office',
       items: [
         {
           itemName: 'Mango',
+          batchLocationName: 'Head Office',
           standardCost: 100,
           standardPrice: 150,
           quantity: 5,
           discountPercent: 20,
+          freeQuantity: 0,
+          margin: 33.33333333333333,
         },
       ],
     });
@@ -116,7 +114,6 @@ describe('PurchaseBillComponent', () => {
     response.next({
       id: 1,
       billNumber: 'PB-TEST',
-      batchLocationName: 'Head Office',
       totalItems: 1,
       totalQuantity: 5,
       totalCost: 400,

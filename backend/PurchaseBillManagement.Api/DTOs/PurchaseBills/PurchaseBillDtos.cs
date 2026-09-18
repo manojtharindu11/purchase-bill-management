@@ -4,9 +4,6 @@ namespace PurchaseBillManagement.Api.DTOs.PurchaseBills
 {
     public class PurchaseBillRequestDto
     {
-        [Required(ErrorMessage = "Batch location is required.")]
-        public string BatchLocationName { get; set; } = string.Empty;
-
         [MinLength(1, ErrorMessage = "Add at least one item to the bill.")]
         public List<PurchaseBillItemRequestDto> Items { get; set; } = new();
     }
@@ -15,6 +12,9 @@ namespace PurchaseBillManagement.Api.DTOs.PurchaseBills
     {
         [Required(ErrorMessage = "Item name is required.")]
         public string ItemName { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "Batch location is required for each item.")]
+        public string BatchLocationName { get; set; } = string.Empty;
 
         [Range(typeof(decimal), "0", "99999999999", ErrorMessage = "Standard cost must be zero or more.")]
         public decimal StandardCost { get; set; }
@@ -27,13 +27,17 @@ namespace PurchaseBillManagement.Api.DTOs.PurchaseBills
 
         [Range(typeof(decimal), "0", "100", ErrorMessage = "Discount must be between 0 and 100.")]
         public decimal DiscountPercent { get; set; }
+
+        [Range(typeof(decimal), "0", "999999999", ErrorMessage = "Free quantity must be zero or more.")]
+        public decimal FreeQuantity { get; set; }
+
+        public decimal Margin { get; set; }
     }
 
     public class PurchaseBillResponseDto
     {
         public int Id { get; set; }
         public string BillNumber { get; set; } = string.Empty;
-        public string BatchLocationName { get; set; } = string.Empty;
         public int TotalItems { get; set; }
         public decimal TotalQuantity { get; set; }
         public decimal TotalCost { get; set; }
@@ -46,10 +50,13 @@ namespace PurchaseBillManagement.Api.DTOs.PurchaseBills
     {
         public int Id { get; set; }
         public string ItemName { get; set; } = string.Empty;
+        public string BatchLocationName { get; set; } = string.Empty;
         public decimal StandardCost { get; set; }
         public decimal StandardPrice { get; set; }
         public decimal Quantity { get; set; }
         public decimal DiscountPercent { get; set; }
+        public decimal FreeQuantity { get; set; }
+        public decimal Margin { get; set; }
         public decimal TotalCost { get; set; }
         public decimal TotalSelling { get; set; }
     }

@@ -1,13 +1,15 @@
 export interface PurchaseBillItemRequest {
   itemName: string;
+  batchLocationName: string;
   standardCost: number;
   standardPrice: number;
   quantity: number;
   discountPercent: number;
+  freeQuantity: number;
+  margin: number;
 }
 
 export interface PurchaseBillRequest {
-  batchLocationName: string;
   items: PurchaseBillItemRequest[];
 }
 
@@ -20,7 +22,6 @@ export interface PurchaseBillItemResponse extends PurchaseBillItemRequest {
 export interface PurchaseBillResponse {
   id: number;
   billNumber: string;
-  batchLocationName: string;
   totalItems: number;
   totalQuantity: number;
   totalCost: number;
@@ -31,8 +32,6 @@ export interface PurchaseBillResponse {
 
 /** Draft row kept client-side before submit. Totals are computed locally. */
 export interface BillItemDraft extends PurchaseBillItemRequest {
-  batchLocationName: string;
-  freeQuantity: number;
   totalCost: number;
   totalSelling: number;
 }

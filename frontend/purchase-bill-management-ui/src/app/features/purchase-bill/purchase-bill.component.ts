@@ -12,6 +12,7 @@ import {
   BillItemDraft,
   computeItemTotals,
   computeMarginPercent,
+  PurchaseBillRequest,
   PurchaseBillResponse,
 } from '../../core/models/purchase-bill.models';
 import { AutocompleteComponent } from '../../shared/components/autocomplete/autocomplete.component';
@@ -118,12 +119,22 @@ export class PurchaseBillComponent implements OnInit {
       v.quantity,
       v.discountPercent,
     );
-    this.items.update((rows) => [...rows, { ...v, itemName, totalCost, totalSelling }]);
+    this.items.update((rows) => [
+      ...rows,
+      {
+        ...v,
+        itemName,
+        margin: computeMarginPercent(v.standardCost, v.standardPrice),
+        totalCost,
+        totalSelling,
+      },
+    ]);
     this.submitError.set(null);
     this.success.set(null);
     this.itemSubmitAttempted.set(false);
     this.itemForm.reset({
       itemName: '',
+      batchLocationName: v.batchLocationName,
       standardCost: 0,
       standardPrice: 0,
       freeQuantity: 0,
@@ -149,18 +160,22 @@ export class PurchaseBillComponent implements OnInit {
       this.itemForm.controls.batchLocationName.markAsTouched();
       return;
     }
+    const payload: PurchaseBillRequest = {
+      items: this.items().map((i) => ({
+        itemName: i.itemName,
+        batchLocationName: i.batchLocationName,
+        standardCost: i.standardCost,
+        standardPrice: i.standardPrice,
+        quantity: i.quantity,
+        discountPercent: i.discountPercent,
+        freeQuantity: i.freeQuantity,
+        margin: computeMarginPercent(i.standardCost, i.standardPrice),
+      })),
+    };
+    console.log('Purchase bill final payload:', payload);
     this.isSubmitting.set(true);
     this.api
-      .createBill({
-        batchLocationName,
-        items: this.items().map((i) => ({
-          itemName: i.itemName,
-          standardCost: i.standardCost,
-          standardPrice: i.standardPrice,
-          quantity: i.quantity,
-          discountPercent: i.discountPercent,
-        })),
-      })
+      .createBill(payload)
       .pipe(finalize(() => this.isSubmitting.set(false)))
       .subscribe({
         next: (bill) => {

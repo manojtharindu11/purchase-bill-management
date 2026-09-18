@@ -48,11 +48,6 @@ namespace PurchaseBillManagement.Api.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("BatchLocationName")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
-
                     b.Property<string>("BillNumber")
                         .IsRequired()
                         .HasMaxLength(50)

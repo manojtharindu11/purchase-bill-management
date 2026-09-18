@@ -12,8 +12,8 @@ using PurchaseBillManagement.Api.Data;
 namespace PurchaseBillManagement.Api.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260917061704_AddPurchaseBillTables")]
-    partial class AddPurchaseBillTables
+    [Migration("20260918102209_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -50,11 +50,6 @@ namespace PurchaseBillManagement.Api.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("BatchLocationName")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
 
                     b.Property<string>("BillNumber")
                         .IsRequired()

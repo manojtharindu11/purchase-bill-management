@@ -21,12 +21,12 @@ namespace PurchaseBillManagement.Api.Middleware
             }
             catch (ApiException ex)
             {
-                _logger.LogWarning(ex, "Request failed: {Message}", ex.Message);
+                _logger.LogWarning("Request failed: {Message}", ex.Message);
                 await WriteErrorAsync(context, ex.StatusCode, ex.Message);
             }
             catch (UnauthorizedAccessException ex)
             {
-                _logger.LogWarning(ex, "Unauthorized: {Message}", ex.Message);
+                _logger.LogWarning("Unauthorized: {Message}", ex.Message);
                 await WriteErrorAsync(context, StatusCodes.Status401Unauthorized, ex.Message);
             }
             catch (Exception ex)

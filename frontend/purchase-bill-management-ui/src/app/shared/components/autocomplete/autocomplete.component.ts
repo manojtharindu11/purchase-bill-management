@@ -13,12 +13,16 @@ import { FormsModule } from '@angular/forms';
     <div class="relative">
       <input
         type="text"
+        [attr.aria-label]="ariaLabel()"
+        [attr.aria-required]="required()"
+        [attr.aria-autocomplete]="'list'"
         [placeholder]="placeholder()"
         [ngModel]="value()"
+        [ngModelOptions]="{ standalone: true }"
         (ngModelChange)="onInput($event)"
         (focus)="open.set(true)"
         (blur)="onBlur()"
-        class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+        class="w-full border-0 border-b-2 border-slate-300 bg-transparent px-0 py-2 text-sm outline-none focus:border-blue-500 focus:ring-0"
       />
       @if (open() && filtered().length > 0) {
         <ul
@@ -44,7 +48,9 @@ export class AutocompleteComponent {
   options = input<string[]>([]);
   value = input<string>('');
   valueChange = output<string>();
-  placeholder = input<string>('Start typing…');
+  placeholder = input<string>('Select item');
+  ariaLabel = input<string>('Item');
+  required = input(false);
 
   protected readonly open = signal(false);
 

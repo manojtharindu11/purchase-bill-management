@@ -20,10 +20,11 @@ export class LoginComponent {
   readonly loading = inject(LoadingService);
 
   readonly errorMessage = signal<string | null>(null);
+  readonly showPassword = signal(false);
 
   readonly form = this.fb.nonNullable.group({
     username: ['', [Validators.required, Validators.email]],
-    password: ['', [Validators.required, Validators.minLength(4)]],
+    password: ['', [Validators.required, Validators.minLength(4), Validators.pattern(/\S/)]],
   });
 
   get username() {
@@ -34,8 +35,13 @@ export class LoginComponent {
     return this.form.controls.password;
   }
 
+  togglePasswordVisibility(): void {
+    this.showPassword.update((visible) => !visible);
+  }
+
   submit(): void {
     this.errorMessage.set(null);
+    this.form.controls.username.setValue(this.form.controls.username.value.trim());
     if (this.form.invalid) {
       this.form.markAllAsTouched();
       return;
@@ -45,13 +51,18 @@ export class LoginComponent {
       .login(this.form.getRawValue())
       .pipe(finalize(() => undefined))
       .subscribe({
-        next: () => void this.router.navigate(['/purchase-bill']),
+        next: async () => {
+          const navigated = await this.router.navigate(['/purchase-bill']);
+          if (!navigated) {
+            this.errorMessage.set('Could not open the purchase bill page. Please try again.');
+          }
+        },
         error: (error: HttpErrorResponse) => {
           const serverMessage =
             (error.error as { message?: string } | null)?.message ??
             (typeof error.error === 'string' ? error.error : null);
           this.errorMessage.set(
-            serverMessage ?? 'Login failed. Please check your email and password.'
+            serverMessage ?? 'Login failed. Please check your email and password.',
           );
         },
       });

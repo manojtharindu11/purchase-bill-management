@@ -8,7 +8,7 @@ using PurchaseBillManagement.Api.Services;
 namespace PurchaseBillManagement.Api.Controllers
 {
     [ApiController]
-    [Route("api/purchasebills")]
+    [Route("api/v1/purchasebills")]
     [Authorize]
     public class PurchaseBillsController : ControllerBase
     {

@@ -31,14 +31,15 @@ namespace PurchaseBillManagement.Api.Services
             if (request.Items is null || request.Items.Count == 0)
                 throw new ApiException(StatusCodes.Status400BadRequest, "A purchase bill must contain at least one item.");
 
-            var batchExists = await _dbContext.LocationDetails
-                .AnyAsync(l => l.LocationName == request.BatchLocationName, cancellationToken);
-            if (!batchExists)
-                throw new ApiException(StatusCodes.Status400BadRequest, "The selected batch location is invalid.");
-
             var items = new List<PurchaseBillItem>(request.Items.Count);
             foreach (var item in request.Items)
             {
+                var batchLocationName = item.BatchLocationName.Trim();
+                var batchExists = await _dbContext.LocationDetails
+                    .AnyAsync(l => l.LocationName == batchLocationName, cancellationToken);
+                if (!batchExists)
+                    throw new ApiException(StatusCodes.Status400BadRequest, $"The batch location '{batchLocationName}' is invalid.");
+
                 var grossCost = item.StandardCost * item.Quantity;
                 var discountAmount = grossCost * item.DiscountPercent / 100m;
                 var totalCost = grossCost - discountAmount;
@@ -47,7 +48,7 @@ namespace PurchaseBillManagement.Api.Services
                 items.Add(new PurchaseBillItem
                 {
                     ItemName = item.ItemName.Trim(),
-                    BatchLocationName = request.BatchLocationName,
+                    BatchLocationName = batchLocationName,
                     StandardCost = item.StandardCost,
                     StandardPrice = item.StandardPrice,
                     Quantity = item.Quantity,
@@ -63,7 +64,6 @@ namespace PurchaseBillManagement.Api.Services
                 CompanyCode = companyCode,
                 UserCode = userCode,
                 UserDisplayName = userDisplayName,
-                BatchLocationName = request.BatchLocationName,
                 TotalItems = items.Count,
                 TotalQuantity = items.Sum(i => i.Quantity),
                 TotalCost = items.Sum(i => i.TotalCost),
@@ -94,7 +94,6 @@ namespace PurchaseBillManagement.Api.Services
         {
             Id = bill.Id,
             BillNumber = bill.BillNumber,
-            BatchLocationName = bill.BatchLocationName,
             TotalItems = bill.TotalItems,
             TotalQuantity = bill.TotalQuantity,
             TotalCost = bill.TotalCost,
@@ -104,10 +103,13 @@ namespace PurchaseBillManagement.Api.Services
             {
                 Id = i.Id,
                 ItemName = i.ItemName,
+                BatchLocationName = i.BatchLocationName,
                 StandardCost = i.StandardCost,
                 StandardPrice = i.StandardPrice,
                 Quantity = i.Quantity,
                 DiscountPercent = i.DiscountPercent,
+                FreeQuantity = 0,
+                Margin = i.StandardPrice <= 0 ? 0 : (i.StandardPrice - i.StandardCost) / i.StandardPrice * 100,
                 TotalCost = i.TotalCost,
                 TotalSelling = i.TotalSelling
             }).ToList()

@@ -1,13 +1,15 @@
 export interface PurchaseBillItemRequest {
   itemName: string;
+  batchLocationName: string;
   standardCost: number;
   standardPrice: number;
   quantity: number;
   discountPercent: number;
+  freeQuantity: number;
+  margin: number;
 }
 
 export interface PurchaseBillRequest {
-  batchLocationName: string;
   items: PurchaseBillItemRequest[];
 }
 
@@ -20,7 +22,6 @@ export interface PurchaseBillItemResponse extends PurchaseBillItemRequest {
 export interface PurchaseBillResponse {
   id: number;
   billNumber: string;
-  batchLocationName: string;
   totalItems: number;
   totalQuantity: number;
   totalCost: number;
@@ -41,10 +42,15 @@ export function computeItemTotals(
   standardCost: number,
   standardPrice: number,
   quantity: number,
-  discountPercent: number
+  discountPercent: number,
 ): { totalCost: number; totalSelling: number } {
   const grossCost = standardCost * quantity;
   const totalCost = grossCost - (grossCost * discountPercent) / 100;
   const totalSelling = standardPrice * quantity;
   return { totalCost, totalSelling };
+}
+
+export function computeMarginPercent(standardCost: number, standardPrice: number): number {
+  if (standardPrice <= 0) return 0;
+  return ((standardPrice - standardCost) / standardPrice) * 100;
 }

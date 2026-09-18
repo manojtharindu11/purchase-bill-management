@@ -6,6 +6,7 @@ using Microsoft.OpenApi.Models;
 using PurchaseBillManagement.Api.Data;
 using PurchaseBillManagement.Api.Middleware;
 using PurchaseBillManagement.Api.Services;
+using System.Net.Http.Headers;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -57,7 +58,10 @@ builder.Services.AddCors(options =>
 // External POS API client
 var externalApiBaseUrl = builder.Configuration["ExternalApi:BaseUrl"]
     ?? throw new InvalidOperationException("ExternalApi:BaseUrl is not configured.");
-builder.Services.AddHttpClient<ExternalPosApiClient>(client => client.BaseAddress = new Uri(externalApiBaseUrl));
+builder.Services.AddHttpClient<ExternalPosApiClient>(client =>
+{
+    client.BaseAddress = new Uri(externalApiBaseUrl);
+});
 
 // Application services
 builder.Services.AddScoped<IAuthService, AuthService>();

@@ -6,11 +6,23 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace PurchaseBillManagement.Api.Migrations
 {
     /// <inheritdoc />
-    public partial class AddPurchaseBillTables : Migration
+    public partial class InitialCreate : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.CreateTable(
+                name: "Location_Details",
+                columns: table => new
+                {
+                    Location_Code = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    Location_Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Location_Details", x => x.Location_Code);
+                });
+
             migrationBuilder.CreateTable(
                 name: "Purchase_Bills",
                 columns: table => new
@@ -21,7 +33,6 @@ namespace PurchaseBillManagement.Api.Migrations
                     CompanyCode = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     UserCode = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     UserDisplayName = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    BatchLocationName = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
                     TotalItems = table.Column<int>(type: "int", nullable: false),
                     TotalQuantity = table.Column<decimal>(type: "decimal(18,3)", precision: 18, scale: 3, nullable: false),
                     TotalCost = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
@@ -75,6 +86,9 @@ namespace PurchaseBillManagement.Api.Migrations
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropTable(
+                name: "Location_Details");
+
             migrationBuilder.DropTable(
                 name: "Purchase_Bill_Items");
 

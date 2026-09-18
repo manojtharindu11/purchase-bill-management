@@ -37,7 +37,6 @@ namespace PurchaseBillManagement.Api.Data
                 entity.HasKey(e => e.Id);
                 entity.Property(e => e.BillNumber).IsRequired().HasMaxLength(50);
                 entity.HasIndex(e => e.BillNumber).IsUnique();
-                entity.Property(e => e.BatchLocationName).HasMaxLength(200);
                 entity.Property(e => e.TotalQuantity).HasPrecision(18, 3);
                 entity.Property(e => e.TotalCost).HasPrecision(18, 2);
                 entity.Property(e => e.TotalSelling).HasPrecision(18, 2);

@@ -72,9 +72,11 @@ namespace PurchaseBillManagement.Api.Services
             {
                 await UpsertLocationsAsync(authenticatedUser, cancellationToken);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                _logger.LogWarning("Failed to upsert locations; continuing without failing login.");
+                _logger.LogError(ex,
+                    "Login succeeded but location synchronization failed. UserCode={UserCode}",
+                    authenticatedUser.UserCode);
             }
 
             return new LoginResponseDto

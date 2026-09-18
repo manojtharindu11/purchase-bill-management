@@ -18,23 +18,10 @@ CREATE TABLE [Location_Details] (
 );
 GO
 
-INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
-VALUES (N'20260917053410_AddLocationDetails', N'8.0.31');
-GO
-
-COMMIT;
-GO
-
-BEGIN TRANSACTION;
-GO
-
 CREATE TABLE [Purchase_Bills] (
     [Id] int NOT NULL IDENTITY,
     [BillNumber] nvarchar(50) NOT NULL,
-    [CompanyCode] nvarchar(max) NOT NULL,
     [UserCode] nvarchar(max) NOT NULL,
-    [UserDisplayName] nvarchar(max) NOT NULL,
-    [BatchLocationName] nvarchar(200) NOT NULL,
     [TotalItems] int NOT NULL,
     [TotalQuantity] decimal(18,3) NOT NULL,
     [TotalCost] decimal(18,2) NOT NULL,
@@ -56,18 +43,21 @@ CREATE TABLE [Purchase_Bill_Items] (
     [TotalCost] decimal(18,2) NOT NULL,
     [TotalSelling] decimal(18,2) NOT NULL,
     CONSTRAINT [PK_Purchase_Bill_Items] PRIMARY KEY ([Id]),
-    CONSTRAINT [FK_Purchase_Bill_Items_Purchase_Bills_PurchaseBillId] FOREIGN KEY ([PurchaseBillId]) REFERENCES [Purchase_Bills] ([Id]) ON DELETE CASCADE
+    CONSTRAINT [FK_Purchase_Bill_Items_Purchase_Bills_PurchaseBillId]
+        FOREIGN KEY ([PurchaseBillId]) REFERENCES [Purchase_Bills] ([Id]) ON DELETE CASCADE
 );
 GO
 
-CREATE INDEX [IX_Purchase_Bill_Items_PurchaseBillId] ON [Purchase_Bill_Items] ([PurchaseBillId]);
+CREATE INDEX [IX_Purchase_Bill_Items_PurchaseBillId]
+    ON [Purchase_Bill_Items] ([PurchaseBillId]);
 GO
 
-CREATE UNIQUE INDEX [IX_Purchase_Bills_BillNumber] ON [Purchase_Bills] ([BillNumber]);
+CREATE UNIQUE INDEX [IX_Purchase_Bills_BillNumber]
+    ON [Purchase_Bills] ([BillNumber]);
 GO
 
 INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
-VALUES (N'20260917061704_AddPurchaseBillTables', N'8.0.31');
+VALUES (N'20260918131407_InitialMigration', N'8.0.31');
 GO
 
 COMMIT;

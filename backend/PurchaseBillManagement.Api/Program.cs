@@ -21,7 +21,8 @@ builder.Services.AddEndpointsApiExplorer();
 // SQL Server (Docker)
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
     ?? throw new InvalidOperationException("Connection string 'DefaultConnection' is not configured.");
-builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlServer(connectionString));
+builder.Services.AddDbContext<AppDbContext>(options =>
+    options.UseSqlServer(connectionString, sql => sql.CommandTimeout(120)));
 
 // JWT bearer authentication
 var jwtSection = builder.Configuration.GetSection("Jwt");

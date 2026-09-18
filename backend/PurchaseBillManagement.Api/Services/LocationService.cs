@@ -21,6 +21,7 @@ namespace PurchaseBillManagement.Api.Services
         public async Task<List<LocationDto>> GetAllAsync(CancellationToken cancellationToken = default)
         {
             return await _dbContext.LocationDetails
+                .AsNoTracking()
                 .OrderBy(l => l.LocationName)
                 .Select(l => new LocationDto
                 {

@@ -42,14 +42,8 @@ namespace PurchaseBillManagement.Api.Services
 
             var user = posResponse?.ResponseBody?.FirstOrDefault();
 
-            // The external API answers HTTP/Status_Code 200 even when the
-            // credentials are rejected, so the outcome must be judged from the
-            // payload: a genuine success always carries a User_Code plus the
-            // User_Locations collection. Everything below is logged so a
-            // rejection can be diagnosed without guessing.
-            _logger.LogInformation("GetLoginData -> Status_Code={StatusCode}, Locations={LocationCount}",
-                posResponse?.StatusCode, user?.UserLocations?.Count ?? 0);
-
+            // The external API can return HTTP 200 for rejected credentials, so
+            // authentication is determined from the response payload.
             var isAuthenticated = user is not null
                 && !string.IsNullOrWhiteSpace(user.UserCode)
                 && user.UserLocations is { Count: > 0 };

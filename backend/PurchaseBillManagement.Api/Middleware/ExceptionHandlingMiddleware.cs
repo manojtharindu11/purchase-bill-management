@@ -35,7 +35,15 @@ namespace PurchaseBillManagement.Api.Middleware
             }
             catch (SqlException ex)
             {
-                _logger.LogError(ex, "Database request failed. TraceId={TraceId} Path={Path}", traceId, context.Request.Path);
+                _logger.LogError(
+                    ex,
+                    "Database request failed. TraceId={TraceId} Path={Path} Number={Number} State={State} Server={Server} Database={Database}",
+                    traceId,
+                    context.Request.Path,
+                    ex.Number,
+                    ex.State,
+                    ex.Server,
+                    ex.Errors.Count > 0 ? ex.Errors[0].Server : "unknown");
                 await WriteErrorAsync(
                     context,
                     GetDatabaseStatusCode(ex),
@@ -79,7 +87,8 @@ namespace PurchaseBillManagement.Api.Middleware
                 4060 => "The API reached SQL Server, but the PurchaseBillManagement database could not be opened. Check the database name and user permissions.",
                 18456 => "The API reached SQL Server, but the database credentials were rejected. Check the SQL username and password.",
                 53 or 11001 or -2 => "The API could not reach SQL Server. Check the Azure SQL server hostname, port 1433, and firewall rules.",
-                _ => "The database request failed. Check the API Render logs using the supplied trace ID."
+                40613 or 40197 or 40501 or 49918 or 49919 or 49920 => "Azure SQL is temporarily unavailable or throttling the request. Check the Azure SQL service health and retry.",
+                _ => $"The database request failed with SQL error {exception.Number}. Check the API Render logs using the supplied trace ID."
             };
     }
 }

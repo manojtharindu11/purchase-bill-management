@@ -360,7 +360,7 @@ Ensure the token was created with the current values of `Jwt__Key`, `Jwt__Issuer
 
 ## Video
 
-[![Watch the Purchase Bill Management walkthrough](https://img.youtube.com/vi/v6XOkbO_4QU/maxresdefault.jpg)](https://youtu.be/v6XOkbO_4QU)
+[[![Watch the Purchase Bill Management walkthrough](https://img.youtube.com/vi/v6XOkbO_4QU/maxresdefault.jpg)](https://youtu.be/v6XOkbO_4QU)](https://github.com/user-attachments/assets/edc7a097-a6d5-445f-8d0a-702ac8083615)
 
 The original recording is also available as [Screen recording.mkv](Screen%20recording.mkv).
 

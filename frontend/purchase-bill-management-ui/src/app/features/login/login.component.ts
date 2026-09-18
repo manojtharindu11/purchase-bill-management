@@ -24,7 +24,7 @@ export class LoginComponent {
 
   readonly form = this.fb.nonNullable.group({
     username: ['', [Validators.required, Validators.email]],
-    password: ['', [Validators.required, Validators.minLength(4)]],
+    password: ['', [Validators.required, Validators.minLength(4), Validators.pattern(/\S/)]],
   });
 
   get username() {
@@ -41,6 +41,7 @@ export class LoginComponent {
 
   submit(): void {
     this.errorMessage.set(null);
+    this.form.controls.username.setValue(this.form.controls.username.value.trim());
     if (this.form.invalid) {
       this.form.markAllAsTouched();
       return;

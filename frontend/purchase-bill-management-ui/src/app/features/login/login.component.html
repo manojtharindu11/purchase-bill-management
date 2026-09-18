@@ -79,6 +79,8 @@
           Password is required.
           } @else if (password.errors?.['minlength']) {
           Password must be at least 4 characters.
+          } @else if (password.errors?.['pattern']) {
+          Password cannot contain only spaces.
           }
         </p>
         }

@@ -4,9 +4,7 @@
     {
         public int Id { get; set; }
         public string BillNumber { get; set; } = string.Empty;
-        public string CompanyCode { get; set; } = string.Empty;
         public string UserCode { get; set; } = string.Empty;
-        public string UserDisplayName { get; set; } = string.Empty;
         public int TotalItems { get; set; }
         public decimal TotalQuantity { get; set; }
         public decimal TotalCost { get; set; }

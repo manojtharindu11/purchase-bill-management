@@ -23,11 +23,10 @@ namespace PurchaseBillManagement.Api.Controllers
         public async Task<IActionResult> Create([FromBody] PurchaseBillRequestDto request, CancellationToken cancellationToken)
         {
             var userCode = User.FindFirstValue(JwtRegisteredClaimNames.Sub) ?? string.Empty;
-            var userDisplayName = User.FindFirstValue(JwtRegisteredClaimNames.UniqueName) ?? string.Empty;
-            var companyCode = User.FindFirstValue("company_code") ?? string.Empty;
+            Console.WriteLine($"User Code: {userCode}"); // Log the user code for debugging
 
             var bill = await _purchaseBillService.CreateAsync(
-                request, userCode, userDisplayName, companyCode, cancellationToken);
+                request, userCode, cancellationToken);
 
             return CreatedAtAction(nameof(GetAll), new { id = bill.Id }, bill);
         }

@@ -9,8 +9,7 @@ namespace PurchaseBillManagement.Api.Services
     public interface IPurchaseBillService
     {
         Task<PurchaseBillResponseDto> CreateAsync(
-            PurchaseBillRequestDto request, string userCode, string userDisplayName, string companyCode,
-            CancellationToken cancellationToken = default);
+            PurchaseBillRequestDto request, string userCode, CancellationToken cancellationToken = default);
 
         Task<List<PurchaseBillResponseDto>> GetAllAsync(CancellationToken cancellationToken = default);
     }
@@ -25,7 +24,7 @@ namespace PurchaseBillManagement.Api.Services
         }
 
         public async Task<PurchaseBillResponseDto> CreateAsync(
-            PurchaseBillRequestDto request, string userCode, string userDisplayName, string companyCode,
+            PurchaseBillRequestDto request, string userCode,
             CancellationToken cancellationToken = default)
         {
             if (request.Items is null || request.Items.Count == 0)
@@ -61,9 +60,7 @@ namespace PurchaseBillManagement.Api.Services
             var bill = new PurchaseBill
             {
                 BillNumber = GenerateBillNumber(),
-                CompanyCode = companyCode,
                 UserCode = userCode,
-                UserDisplayName = userDisplayName,
                 TotalItems = items.Count,
                 TotalQuantity = items.Sum(i => i.Quantity),
                 TotalCost = items.Sum(i => i.TotalCost),

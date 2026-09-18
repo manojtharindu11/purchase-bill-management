@@ -53,10 +53,6 @@ namespace PurchaseBillManagement.Api.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
-                    b.Property<string>("CompanyCode")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
@@ -76,10 +72,6 @@ namespace PurchaseBillManagement.Api.Migrations
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("UserCode")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("UserDisplayName")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 

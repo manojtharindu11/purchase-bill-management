@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace PurchaseBillManagement.Api.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class InitialMigration : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -30,9 +30,7 @@ namespace PurchaseBillManagement.Api.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     BillNumber = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    CompanyCode = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     UserCode = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    UserDisplayName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     TotalItems = table.Column<int>(type: "int", nullable: false),
                     TotalQuantity = table.Column<decimal>(type: "decimal(18,3)", precision: 18, scale: 3, nullable: false),
                     TotalCost = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),

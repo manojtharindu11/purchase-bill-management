@@ -84,8 +84,6 @@ jobs:
         with:
           context: ./frontend/purchase-bill-management-ui
           push: true
-          build-args: |
-            VITE_API_URL=https://job-application-tracker-backend-latest.onrender.com
           tags: |
             ${{ secrets.DOCKERHUB_USERNAME }}/purchase-bill-management-frontend:latest
             ${{ secrets.DOCKERHUB_USERNAME }}/purchase-bill-management-frontend:${{ github.sha }}

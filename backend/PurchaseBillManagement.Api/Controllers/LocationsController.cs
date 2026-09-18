@@ -5,7 +5,7 @@ using PurchaseBillManagement.Api.Services;
 namespace PurchaseBillManagement.Api.Controllers
 {
     [ApiController]
-    [Route("api/locations")]
+    [Route("api/v1/locations")]
     [Authorize]
     public class LocationsController : ControllerBase
     {

@@ -1,12 +1,9 @@
 /**
  * Base URL for API calls.
  *
- * Left empty during development so requests stay relative and go through the
- * Angular dev-server proxy (see proxy.conf.json). That keeps the browser
- * same-origin and avoids CORS entirely. Set this to the deployed API origin
- * for production builds.
+ * Deployed API origin. Requests use the versioned prefix below.
  */
-export const API_BASE_URL = '';
+export const API_BASE_URL = 'https://purchase-bill-management-backend.onrender.com';
 
 /**
  * Versioned API prefix. Kept in one place so a version bump cannot drift

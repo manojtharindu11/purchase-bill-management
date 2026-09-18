@@ -10,7 +10,9 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
 
   return next(req).pipe(
     catchError((error: HttpErrorResponse) => {
-      if (error.status === 401 && !req.url.endsWith('/api/auth/login')) {
+      // A failed login is an expected validation outcome and must surface to the
+      // user - only treat 401s on *other* endpoints as an expired session.
+      if (error.status === 401 && !req.url.includes('/auth/login')) {
         auth.logout();
         void router.navigate(['/login']);
       }

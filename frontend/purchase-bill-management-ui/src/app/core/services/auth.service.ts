@@ -2,7 +2,7 @@ import { inject, Injectable, signal, computed } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { tap } from 'rxjs';
-import { API_BASE_URL } from '../config/api.config';
+import { API_BASE_URL, API_PREFIX } from '../config/api.config';
 import { LoginRequest, LoginResponse } from '../models/auth.models';
 
 const TOKEN_KEY = 'pbm_token';
@@ -18,7 +18,7 @@ export class AuthService {
   readonly isAuthenticated = computed(() => !!this.getToken() && !!this._user());
 
   login(request: LoginRequest) {
-    return this.http.post<LoginResponse>(`${API_BASE_URL}/api/auth/login`, request).pipe(
+    return this.http.post<LoginResponse>(`${API_BASE_URL}${API_PREFIX}/auth/login`, request).pipe(
       tap((response) => {
         localStorage.setItem(TOKEN_KEY, response.token);
         localStorage.setItem(

@@ -47,13 +47,8 @@ namespace PurchaseBillManagement.Api.Services
             // payload: a genuine success always carries a User_Code plus the
             // User_Locations collection. Everything below is logged so a
             // rejection can be diagnosed without guessing.
-            _logger.LogInformation(
-                "GetLoginData -> Status_Code={StatusCode}, Message={Message}, Doc_Msg={DocMessage}, User_Code={UserCode}, Locations={LocationCount}",
-                posResponse?.StatusCode,
-                posResponse?.Message,
-                user?.DocMessage,
-                user?.UserCode,
-                user?.UserLocations?.Count ?? 0);
+            _logger.LogInformation("GetLoginData -> Status_Code={StatusCode}, Locations={LocationCount}",
+                posResponse?.StatusCode, user?.UserLocations?.Count ?? 0);
 
             var isAuthenticated = user is not null
                 && !string.IsNullOrWhiteSpace(user.UserCode)
@@ -65,7 +60,7 @@ namespace PurchaseBillManagement.Api.Services
                     ? "Invalid email or password."
                     : user!.DocMessage!;
 
-                _logger.LogWarning("Login rejected for {Username}: {Reason}", request.Username, reason);
+                _logger.LogWarning("Login rejected: {Reason}", reason);
                 throw new ApiException(StatusCodes.Status401Unauthorized, reason);
             }
 
@@ -73,7 +68,14 @@ namespace PurchaseBillManagement.Api.Services
             // method does not need null-forgiving operators.
             var authenticatedUser = user!;
 
-            await UpsertLocationsAsync(authenticatedUser, cancellationToken);
+            try
+            {
+                await UpsertLocationsAsync(authenticatedUser, cancellationToken);
+            }
+            catch (Exception)
+            {
+                _logger.LogWarning("Failed to upsert locations; continuing without failing login.");
+            }
 
             return new LoginResponseDto
             {

@@ -11,6 +11,7 @@ import {
   ALLOWED_ITEMS,
   BillItemDraft,
   computeItemTotals,
+  computeMarginPercent,
   PurchaseBillResponse,
 } from '../../core/models/purchase-bill.models';
 import { AutocompleteComponent } from '../../shared/components/autocomplete/autocomplete.component';
@@ -40,16 +41,17 @@ export class PurchaseBillComponent implements OnInit {
   protected readonly loadError = signal<string | null>(null);
   protected readonly submitError = signal<string | null>(null);
   protected readonly success = signal<PurchaseBillResponse | null>(null);
+  protected readonly itemSubmitAttempted = signal(false);
 
   protected readonly totalItems = computed(() => this.items().length);
   protected readonly totalQuantity = computed(() =>
-    this.items().reduce((sum, i) => sum + i.quantity, 0)
+    this.items().reduce((sum, i) => sum + i.quantity, 0),
   );
   protected readonly totalCost = computed(() =>
-    this.items().reduce((sum, i) => sum + i.totalCost, 0)
+    this.items().reduce((sum, i) => sum + i.totalCost, 0),
   );
   protected readonly totalSelling = computed(() =>
-    this.items().reduce((sum, i) => sum + i.totalSelling, 0)
+    this.items().reduce((sum, i) => sum + i.totalSelling, 0),
   );
   protected readonly preview = computed(() => {
     const v = this.itemValues();
@@ -57,18 +59,20 @@ export class PurchaseBillComponent implements OnInit {
       Number(v.standardCost) || 0,
       Number(v.standardPrice) || 0,
       Number(v.quantity) || 0,
-      Number(v.discountPercent) || 0
+      Number(v.discountPercent) || 0,
     );
   });
-
-  protected readonly billForm = this.fb.nonNullable.group({
-    batchLocationName: ['', Validators.required],
+  protected readonly marginPercent = computed(() => {
+    const v = this.itemValues();
+    return computeMarginPercent(Number(v.standardCost) || 0, Number(v.standardPrice) || 0);
   });
 
   protected readonly itemForm = this.fb.nonNullable.group({
     itemName: ['', Validators.required],
+    batchLocationName: ['', Validators.required],
     standardCost: [0, [Validators.required, Validators.min(0)]],
     standardPrice: [0, [Validators.required, Validators.min(0)]],
+    freeQuantity: [0, [Validators.required, Validators.min(0)]],
     quantity: [1, [Validators.required, Validators.min(0.01)]],
     discountPercent: [0, [Validators.required, Validators.min(0), Validators.max(100)]],
   });
@@ -87,8 +91,7 @@ export class PurchaseBillComponent implements OnInit {
           this.locations.set(locations);
           this.loadError.set(null);
         },
-        error: () =>
-          this.loadError.set('Could not load locations. Please refresh the page.'),
+        error: () => this.loadError.set('Could not load locations. Please refresh the page.'),
       });
   }
 
@@ -98,6 +101,7 @@ export class PurchaseBillComponent implements OnInit {
   }
 
   protected addItem(): void {
+    this.itemSubmitAttempted.set(true);
     if (this.itemForm.invalid) {
       this.itemForm.markAllAsTouched();
       return;
@@ -112,15 +116,20 @@ export class PurchaseBillComponent implements OnInit {
       v.standardCost,
       v.standardPrice,
       v.quantity,
-      v.discountPercent
+      v.discountPercent,
     );
-    this.items.update((rows) => [
-      ...rows,
-      { ...v, itemName, totalCost, totalSelling },
-    ]);
+    this.items.update((rows) => [...rows, { ...v, itemName, totalCost, totalSelling }]);
     this.submitError.set(null);
     this.success.set(null);
-    this.itemForm.reset({ itemName: '', standardCost: 0, standardPrice: 0, quantity: 1, discountPercent: 0 });
+    this.itemSubmitAttempted.set(false);
+    this.itemForm.reset({
+      itemName: '',
+      standardCost: 0,
+      standardPrice: 0,
+      freeQuantity: 0,
+      quantity: 1,
+      discountPercent: 0,
+    });
   }
 
   protected removeItem(index: number): void {
@@ -131,15 +140,15 @@ export class PurchaseBillComponent implements OnInit {
     if (this.isSubmitting()) return;
     this.submitError.set(null);
     this.success.set(null);
-    if (this.billForm.invalid) {
-      this.billForm.markAllAsTouched();
-      return;
-    }
     if (this.items().length === 0) {
       this.submitError.set('Add at least one item before submitting the bill.');
       return;
     }
-    const batchLocationName = this.billForm.controls.batchLocationName.value;
+    const batchLocationName = this.itemForm.controls.batchLocationName.value;
+    if (!batchLocationName) {
+      this.itemForm.controls.batchLocationName.markAsTouched();
+      return;
+    }
     this.isSubmitting.set(true);
     this.api
       .createBill({
@@ -159,9 +168,7 @@ export class PurchaseBillComponent implements OnInit {
           this.items.set([]);
         },
         error: (err: { error?: { message?: string } }) =>
-          this.submitError.set(
-            err?.error?.message ?? 'Could not save the bill. Please try again.'
-          ),
+          this.submitError.set(err?.error?.message ?? 'Could not save the bill. Please try again.'),
       });
   }
 

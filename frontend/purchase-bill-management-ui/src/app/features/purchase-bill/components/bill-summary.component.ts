@@ -1,26 +1,28 @@
 import { Component, input } from '@angular/core';
 
-/** Item Summary section: total rows + summed quantity (+ money totals). */
+/** Compact row-wise item summary for the purchase bill sidebar. */
 @Component({
   selector: 'app-bill-summary',
   standalone: true,
   template: `
-    <div class="grid grid-cols-2 gap-3 sm:grid-cols-4">
-      <div class="rounded-xl bg-slate-50 p-4">
-        <p class="text-xs font-medium uppercase tracking-wide text-slate-500">Total Items</p>
-        <p class="mt-1 text-2xl font-bold text-slate-900">{{ totalItems() }}</p>
+    <div class="divide-y divide-slate-100 border-y border-slate-100">
+      <div class="flex items-center justify-between gap-4 py-3">
+        <span class="text-xs font-medium text-slate-500">Total Items</span>
+        <strong class="text-sm font-semibold text-slate-900">{{ totalItems() }}</strong>
       </div>
-      <div class="rounded-xl bg-slate-50 p-4">
-        <p class="text-xs font-medium uppercase tracking-wide text-slate-500">Total Quantity</p>
-        <p class="mt-1 text-2xl font-bold text-slate-900">{{ totalQuantity() }}</p>
+      <div class="flex items-center justify-between gap-4 py-3">
+        <span class="text-xs font-medium text-slate-500">Total Quantity</span>
+        <strong class="text-sm font-semibold text-slate-900">{{ totalQuantity() }}</strong>
       </div>
-      <div class="rounded-xl bg-slate-50 p-4">
-        <p class="text-xs font-medium uppercase tracking-wide text-slate-500">Total Cost</p>
-        <p class="mt-1 text-2xl font-bold text-slate-900">{{ totalCost().toFixed(2) }}</p>
+      <div class="flex items-center justify-between gap-4 py-3">
+        <span class="text-xs font-medium text-slate-500">Total Cost</span>
+        <strong class="text-sm font-semibold text-slate-900">{{ totalCost().toFixed(2) }}</strong>
       </div>
-      <div class="rounded-xl bg-slate-50 p-4">
-        <p class="text-xs font-medium uppercase tracking-wide text-slate-500">Total Selling</p>
-        <p class="mt-1 text-2xl font-bold text-slate-900">{{ totalSelling().toFixed(2) }}</p>
+      <div class="flex items-center justify-between gap-4 py-3">
+        <span class="text-xs font-medium text-slate-500">Total Selling</span>
+        <strong class="text-sm font-semibold text-slate-900">{{
+          totalSelling().toFixed(2)
+        }}</strong>
       </div>
     </div>
   `,

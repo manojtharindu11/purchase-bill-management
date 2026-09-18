@@ -31,6 +31,8 @@ export interface PurchaseBillResponse {
 
 /** Draft row kept client-side before submit. Totals are computed locally. */
 export interface BillItemDraft extends PurchaseBillItemRequest {
+  batchLocationName: string;
+  freeQuantity: number;
   totalCost: number;
   totalSelling: number;
 }
@@ -41,10 +43,15 @@ export function computeItemTotals(
   standardCost: number,
   standardPrice: number,
   quantity: number,
-  discountPercent: number
+  discountPercent: number,
 ): { totalCost: number; totalSelling: number } {
   const grossCost = standardCost * quantity;
   const totalCost = grossCost - (grossCost * discountPercent) / 100;
   const totalSelling = standardPrice * quantity;
   return { totalCost, totalSelling };
+}
+
+export function computeMarginPercent(standardCost: number, standardPrice: number): number {
+  if (standardPrice <= 0) return 0;
+  return ((standardPrice - standardCost) / standardPrice) * 100;
 }

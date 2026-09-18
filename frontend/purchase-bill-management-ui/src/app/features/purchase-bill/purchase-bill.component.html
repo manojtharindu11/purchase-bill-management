@@ -1,5 +1,5 @@
-<div class="min-h-screen bg-slate-100 px-4 py-8">
-  <div class="mx-auto w-full max-w-5xl space-y-6">
+<div class="min-h-screen bg-slate-100 px-3 py-5 sm:px-4 sm:py-8">
+  <div class="mx-auto w-full max-w-6xl space-y-4 sm:space-y-5">
     <header class="flex flex-wrap items-center justify-between gap-3">
       <div>
         <h1 class="text-2xl font-semibold text-slate-900">Purchase Bill</h1>
@@ -7,149 +7,170 @@
           Signed in as {{ auth.currentUser()?.userDisplayName ?? auth.currentUser()?.email }}
         </p>
       </div>
-      <button
-        type="button"
-        (click)="logout()"
-        class="rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700 shadow-sm hover:bg-slate-50"
-      >
+      <button type="button" (click)="logout()"
+        class="rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700 shadow-sm hover:bg-slate-50">
         Logout
       </button>
     </header>
 
     @if (loadError()) {
-      <div role="alert" class="rounded-lg bg-red-50 px-4 py-3 text-sm text-red-700">
-        {{ loadError() }}
-      </div>
+    <div role="alert" class="rounded-lg bg-red-50 px-4 py-3 text-sm text-red-700">
+      {{ loadError() }}
+    </div>
     }
 
     @if (success(); as bill) {
-      <div role="status" class="rounded-lg bg-green-50 px-4 py-3 text-sm text-green-800">
-        Bill <strong>{{ bill.billNumber }}</strong> saved.
-      </div>
+    <output class="block rounded-lg bg-green-50 px-4 py-3 text-sm text-green-800">
+      Bill <strong>{{ bill.billNumber }}</strong> saved.
+    </output>
     }
 
     @if (submitError()) {
-      <div role="alert" class="rounded-lg bg-red-50 px-4 py-3 text-sm text-red-700">
-        {{ submitError() }}
-      </div>
+    <div role="alert" class="rounded-lg bg-red-50 px-4 py-3 text-sm text-red-700">
+      {{ submitError() }}
+    </div>
     }
 
-    <section class="rounded-2xl bg-white p-6 shadow-sm">
-      <h2 class="text-base font-semibold text-slate-900">Bill Details</h2>
-      <form [formGroup]="billForm" class="mt-4 grid gap-4 sm:grid-cols-2">
-        <div>
-          <label for="batch" class="mb-1 block text-sm font-medium text-slate-700">
-            Batch (Location)
-          </label>
-          <select
-            id="batch"
-            formControlName="batchLocationName"
-            class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
-          >
-            <option value="" disabled>Select a location…</option>
-            @for (loc of locations(); track loc.locationCode) {
-              <option [value]="loc.locationName">{{ loc.locationName }}</option>
-            }
-          </select>
-          @if (billForm.controls.batchLocationName.touched && billForm.controls.batchLocationName.invalid) {
-            <p class="mt-1 text-xs text-red-600">Batch location is required.</p>
-          }
-        </div>
-      </form>
-    </section>
-
-    <section class="rounded-2xl bg-white p-6 shadow-sm">
-      <h2 class="text-base font-semibold text-slate-900">Add Item</h2>
-      <form [formGroup]="itemForm" (ngSubmit)="addItem()" class="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        <div class="lg:col-span-1">
-          <label for="itemName" class="mb-1 block text-sm font-medium text-slate-700">Item</label>
-          <app-autocomplete
-            [options]="itemOptions"
-            [value]="itemForm.controls.itemName.value"
-            (valueChange)="onItemNameChange($event)"
-            placeholder="Mango, Apple, Banana…"
-          />
-          @if (itemForm.controls.itemName.touched && itemForm.controls.itemName.invalid) {
+    <div class="grid gap-4 lg:grid-cols-[minmax(0,1fr)_15rem] lg:gap-5 lg:items-start">
+      <section class="rounded-2xl bg-white p-4 shadow-sm sm:p-6">
+        <h2 class="text-base font-semibold text-slate-900">Add Item</h2>
+        <form [formGroup]="itemForm" (ngSubmit)="addItem()" novalidate
+          class="mt-4 grid gap-3 sm:grid-cols-2 sm:gap-4 xl:grid-cols-7">
+          <div class="min-w-0">
+            <label for="itemName"
+              class="block truncate whitespace-nowrap text-[11px] font-medium uppercase tracking-wide text-slate-500">
+              Item <span class="text-red-600" aria-hidden="true">*</span>
+            </label>
+            <app-autocomplete [options]="itemOptions" [value]="itemForm.controls.itemName.value"
+              (valueChange)="onItemNameChange($event)" placeholder="Select item" ariaLabel="Item" [required]="true" />
+            @if (itemForm.controls.itemName.touched && itemForm.controls.itemName.invalid) {
             <p class="mt-1 text-xs text-red-600">
               @if (itemForm.controls.itemName.errors?.['required']) {
-                Item is required.
+              Item is required.
               } @else if (itemForm.controls.itemName.errors?.['notAllowed']) {
-                Choose one of: Mango, Apple, Banana, Orange, Grapes.
+              Choose one of: Mango, Apple, Banana, Orange, Grapes.
               }
             </p>
-          }
-        </div>
+            }
+          </div>
 
-        <div>
-          <label for="standardCost" class="mb-1 block text-sm font-medium text-slate-700">Standard Cost</label>
-          <input
-            id="standardCost"
-            type="number"
-            min="0"
-            step="0.01"
-            formControlName="standardCost"
-            class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
-          />
-          @if (itemForm.controls.standardCost.touched && itemForm.controls.standardCost.invalid) {
+          <div class="min-w-0">
+            <label for="batch"
+              class="block truncate whitespace-nowrap text-[11px] font-medium uppercase tracking-wide text-slate-500">
+              Batch <span class="text-red-600" aria-hidden="true">*</span>
+            </label>
+            <select id="batch" formControlName="batchLocationName" required
+              class="w-full border-0 border-b-2 border-slate-300 bg-transparent px-0 py-2 text-sm outline-none focus:border-blue-500 focus:ring-0">
+              <option value="" disabled>Select batch</option>
+              @for (loc of locations(); track loc.locationCode) {
+              <option [value]="loc.locationName">{{ loc.locationName }}</option>
+              }
+            </select>
+            @if (itemSubmitAttempted() && itemForm.controls.batchLocationName.invalid) {
+            <p class="mt-1 text-xs text-red-600">Batch is required.</p>
+            }
+          </div>
+
+          <div class="min-w-0">
+            <label for="standardCost"
+              class="block truncate whitespace-nowrap text-[11px] font-medium uppercase tracking-wide text-slate-500">Std.
+              Cost</label>
+            <input id="standardCost" type="number" min="0" step="0.01" formControlName="standardCost"
+              class="w-full border-0 border-b-2 border-slate-300 bg-transparent px-0 py-2 text-right text-sm outline-none focus:border-blue-500 focus:ring-0" />
+            @if (itemForm.controls.standardCost.touched && itemForm.controls.standardCost.invalid) {
             <p class="mt-1 text-xs text-red-600">Enter a cost of 0 or more.</p>
-          }
-        </div>
+            }
+          </div>
 
-        <div>
-          <label for="standardPrice" class="mb-1 block text-sm font-medium text-slate-700">Standard Price</label>
-          <input
-            id="standardPrice"
-            type="number"
-            min="0"
-            step="0.01"
-            formControlName="standardPrice"
-            class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
-          />
-          @if (itemForm.controls.standardPrice.touched && itemForm.controls.standardPrice.invalid) {
+          <div class="min-w-0">
+            <label for="standardPrice"
+              class="block truncate whitespace-nowrap text-[11px] font-medium uppercase tracking-wide text-slate-500">Std.
+              Price</label>
+            <input id="standardPrice" type="number" min="0" step="0.01" formControlName="standardPrice"
+              class="w-full border-0 border-b-2 border-slate-300 bg-transparent px-0 py-2 text-right text-sm outline-none focus:border-blue-500 focus:ring-0" />
+            @if (itemForm.controls.standardPrice.touched && itemForm.controls.standardPrice.invalid) {
             <p class="mt-1 text-xs text-red-600">Enter a price of 0 or more.</p>
-          }
-        </div>
+            }
+          </div>
 
-        <div>
-          <label for="quantity" class="mb-1 block text-sm font-medium text-slate-700">Quantity</label>
-          <input id="quantity" type="number" min="0.01" step="0.01" formControlName="quantity"
-            class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm" />
-          @if (itemForm.controls.quantity.touched && itemForm.controls.quantity.invalid) {
+          <div class="min-w-0">
+            <label for="margin"
+              class="block truncate whitespace-nowrap text-[11px] font-medium uppercase tracking-wide text-slate-500">Margin</label>
+            <output id="margin"
+              class="block w-full border-b-2 border-slate-200 px-0 py-2 text-right text-sm text-slate-700">
+              {{ marginPercent().toFixed(2) }}%
+            </output>
+          </div>
+
+          <div class="min-w-0">
+            <label for="quantity"
+              class="block truncate whitespace-nowrap text-[11px] font-medium uppercase tracking-wide text-slate-500">Quantity</label>
+            <input id="quantity" type="number" min="0.01" step="0.01" formControlName="quantity"
+              class="w-full border-0 border-b-2 border-slate-300 bg-transparent px-0 py-2 text-right text-sm outline-none focus:border-blue-500 focus:ring-0" />
+            @if (itemForm.controls.quantity.touched && itemForm.controls.quantity.invalid) {
             <p class="mt-1 text-xs text-red-600">Quantity must be greater than zero.</p>
-          }
-        </div>
-        <div>
-          <label for="discountPercent" class="mb-1 block text-sm font-medium text-slate-700">Discount (%)</label>
-          <input id="discountPercent" type="number" min="0" max="100" step="0.01" formControlName="discountPercent"
-            class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm" />
-          @if (itemForm.controls.discountPercent.touched && itemForm.controls.discountPercent.invalid) {
+            }
+          </div>
+          <div class="min-w-0">
+            <label for="freeQuantity"
+              class="block truncate whitespace-nowrap text-[11px] font-medium uppercase tracking-wide text-slate-500">Free
+              Qty</label>
+            <input id="freeQuantity" type="number" min="0" step="1" formControlName="freeQuantity"
+              class="w-full border-0 border-b-2 border-slate-300 bg-transparent px-0 py-2 text-right text-sm outline-none focus:border-blue-500 focus:ring-0" />
+          </div>
+          <div class="min-w-0">
+            <label for="discountPercent"
+              class="block truncate whitespace-nowrap text-[11px] font-medium uppercase tracking-wide text-slate-500">Discount
+              (%)</label>
+            <input id="discountPercent" type="number" min="0" max="100" step="0.01" formControlName="discountPercent"
+              class="w-full border-0 border-b-2 border-slate-300 bg-transparent px-0 py-2 text-right text-sm outline-none focus:border-blue-500 focus:ring-0" />
+            @if (itemForm.controls.discountPercent.touched && itemForm.controls.discountPercent.invalid) {
             <p class="mt-1 text-xs text-red-600">Discount must be between 0 and 100.</p>
-          }
-        </div>
-        <div class="rounded-lg bg-slate-50 p-3" aria-live="polite">
-          <p>Total Cost: <strong data-testid="preview-cost">{{ preview().totalCost.toFixed(2) }}</strong></p>
-          <p>Total Selling: <strong data-testid="preview-selling">{{ preview().totalSelling.toFixed(2) }}</strong></p>
-        </div>
-        <div class="sm:col-span-2 lg:col-span-3">
-          <button type="submit" [disabled]="isSubmitting()"
-            class="rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white disabled:opacity-50">Add Item</button>
-        </div>
-      </form>
-    </section>
+            }
+          </div>
+          <div class="min-w-0">
+            <label for="totalCost"
+              class="block truncate whitespace-nowrap text-[11px] font-medium uppercase tracking-wide text-slate-500">Total
+              Cost</label>
+            <input id="totalCost" type="text" readonly [value]="preview().totalCost.toFixed(2)"
+              data-testid="preview-cost" aria-live="polite"
+              class="w-full border-0 border-b-2 border-slate-200 bg-transparent px-0 py-2 text-right text-sm text-slate-700 outline-none" />
+          </div>
+          <div class="min-w-0">
+            <label for="totalSelling"
+              class="block truncate whitespace-nowrap text-[11px] font-medium uppercase tracking-wide text-slate-500">Total
+              Selling</label>
+            <input id="totalSelling" type="text" readonly [value]="preview().totalSelling.toFixed(2)"
+              data-testid="preview-selling" aria-live="polite"
+              class="w-full border-0 border-b-2 border-slate-200 bg-transparent px-0 py-2 text-right text-sm text-slate-700 outline-none" />
+          </div>
+          <div class="sm:col-span-2 xl:col-span-2">
+            <button type="submit" [disabled]="isSubmitting()"
+              class="rounded-lg bg-blue-600 px-3 py-1.5 text-xs font-semibold text-white disabled:opacity-50">Add
+              +</button>
+          </div>
+        </form>
 
-    <section class="space-y-4 rounded-2xl bg-white p-6 shadow-sm" aria-labelledby="items-title">
-      <h2 id="items-title" class="text-base font-semibold text-slate-900">Items</h2>
-      <app-bill-item-table [items]="items()" (remove)="removeItem($event)" />
-    </section>
-    <section class="space-y-4 rounded-2xl bg-white p-6 shadow-sm" aria-labelledby="summary-title">
-      <h2 id="summary-title" class="text-base font-semibold text-slate-900">Item Summary</h2>
-      <app-bill-summary [totalItems]="totalItems()" [totalQuantity]="totalQuantity()"
-        [totalCost]="totalCost()" [totalSelling]="totalSelling()" />
-      <button type="button" (click)="submitBill()"
-        [disabled]="loading.isLoading() || isSubmitting() || locations().length === 0 || items().length === 0"
-        class="rounded-lg bg-blue-600 px-5 py-2 text-sm font-semibold text-white disabled:opacity-50">
-        {{ isSubmitting() ? 'Saving…' : 'Save Purchase Bill' }}
-      </button>
-    </section>
+        <div class="mt-4 border-t border-slate-200 pt-4" aria-labelledby="items-title">
+          <div class="mb-2 flex flex-wrap items-center justify-between gap-2">
+            <h2 id="items-title" class="text-base font-semibold text-slate-900">Items</h2>
+            <span class="text-xs text-slate-500">{{ totalItems() }} item{{ totalItems() === 1 ? '' : 's' }}</span>
+          </div>
+          <app-bill-item-table [items]="items()" (remove)="removeItem($event)" />
+        </div>
+      </section>
+
+      <section class="space-y-4 rounded-2xl bg-white p-4 shadow-sm sm:p-6" aria-labelledby="summary-title">
+        <h2 id="summary-title" class="text-base font-semibold text-slate-900">Item Summary</h2>
+        <app-bill-summary [totalItems]="totalItems()" [totalQuantity]="totalQuantity()" [totalCost]="totalCost()"
+          [totalSelling]="totalSelling()" />
+        <button type="button" (click)="submitBill()"
+          [disabled]="loading.isLoading() || isSubmitting() || locations().length === 0 || items().length === 0"
+          class="w-full rounded-lg bg-blue-600 px-5 py-2 text-sm font-semibold text-white disabled:opacity-50">
+          {{ isSubmitting() ? 'Saving…' : 'Save Purchase Bill' }}
+        </button>
+      </section>
+    </div>
+
   </div>
 </div>

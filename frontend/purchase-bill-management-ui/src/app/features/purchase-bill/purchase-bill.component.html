@@ -109,3 +109,47 @@
             <p class="mt-1 text-xs text-red-600">Enter a price of 0 or more.</p>
           }
         </div>
+
+        <div>
+          <label for="quantity" class="mb-1 block text-sm font-medium text-slate-700">Quantity</label>
+          <input id="quantity" type="number" min="0.01" step="0.01" formControlName="quantity"
+            class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm" />
+          @if (itemForm.controls.quantity.touched && itemForm.controls.quantity.invalid) {
+            <p class="mt-1 text-xs text-red-600">Quantity must be greater than zero.</p>
+          }
+        </div>
+        <div>
+          <label for="discountPercent" class="mb-1 block text-sm font-medium text-slate-700">Discount (%)</label>
+          <input id="discountPercent" type="number" min="0" max="100" step="0.01" formControlName="discountPercent"
+            class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm" />
+          @if (itemForm.controls.discountPercent.touched && itemForm.controls.discountPercent.invalid) {
+            <p class="mt-1 text-xs text-red-600">Discount must be between 0 and 100.</p>
+          }
+        </div>
+        <div class="rounded-lg bg-slate-50 p-3" aria-live="polite">
+          <p>Total Cost: <strong data-testid="preview-cost">{{ preview().totalCost.toFixed(2) }}</strong></p>
+          <p>Total Selling: <strong data-testid="preview-selling">{{ preview().totalSelling.toFixed(2) }}</strong></p>
+        </div>
+        <div class="sm:col-span-2 lg:col-span-3">
+          <button type="submit" [disabled]="isSubmitting()"
+            class="rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white disabled:opacity-50">Add Item</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="space-y-4 rounded-2xl bg-white p-6 shadow-sm" aria-labelledby="items-title">
+      <h2 id="items-title" class="text-base font-semibold text-slate-900">Items</h2>
+      <app-bill-item-table [items]="items()" (remove)="removeItem($event)" />
+    </section>
+    <section class="space-y-4 rounded-2xl bg-white p-6 shadow-sm" aria-labelledby="summary-title">
+      <h2 id="summary-title" class="text-base font-semibold text-slate-900">Item Summary</h2>
+      <app-bill-summary [totalItems]="totalItems()" [totalQuantity]="totalQuantity()"
+        [totalCost]="totalCost()" [totalSelling]="totalSelling()" />
+      <button type="button" (click)="submitBill()"
+        [disabled]="loading.isLoading() || isSubmitting() || locations().length === 0 || items().length === 0"
+        class="rounded-lg bg-blue-600 px-5 py-2 text-sm font-semibold text-white disabled:opacity-50">
+        {{ isSubmitting() ? 'Saving…' : 'Save Purchase Bill' }}
+      </button>
+    </section>
+  </div>
+</div>

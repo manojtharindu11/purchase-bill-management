@@ -15,6 +15,7 @@ import { FormsModule } from '@angular/forms';
         type="text"
         [placeholder]="placeholder()"
         [ngModel]="value()"
+        [ngModelOptions]="{ standalone: true }"
         (ngModelChange)="onInput($event)"
         (focus)="open.set(true)"
         (blur)="onBlur()"

@@ -1,4 +1,6 @@
 import { Component, computed, inject, OnInit, signal } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
+
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { finalize } from 'rxjs';
 import { AuthService } from '../../core/services/auth.service';
@@ -50,12 +52,13 @@ export class PurchaseBillComponent implements OnInit {
     this.items().reduce((sum, i) => sum + i.totalSelling, 0)
   );
   protected readonly preview = computed(() => {
-    const v = this.itemForm.getRawValue();
-    const cost = Number(v.standardCost) || 0;
-    const price = Number(v.standardPrice) || 0;
-    const qty = Number(v.quantity) || 0;
-    const disc = Number(v.discountPercent) || 0;
-    return computeItemTotals(cost, price, qty, disc);
+    const v = this.itemValues();
+    return computeItemTotals(
+      Number(v.standardCost) || 0,
+      Number(v.standardPrice) || 0,
+      Number(v.quantity) || 0,
+      Number(v.discountPercent) || 0
+    );
   });
 
   protected readonly billForm = this.fb.nonNullable.group({
@@ -69,6 +72,11 @@ export class PurchaseBillComponent implements OnInit {
     quantity: [1, [Validators.required, Validators.min(0.01)]],
     discountPercent: [0, [Validators.required, Validators.min(0), Validators.max(100)]],
   });
+
+  private readonly itemValues = toSignal(this.itemForm.valueChanges, {
+    initialValue: this.itemForm.getRawValue(),
+  });
+  protected readonly isSubmitting = signal(false);
 
   ngOnInit(): void {
     this.api
@@ -120,6 +128,7 @@ export class PurchaseBillComponent implements OnInit {
   }
 
   protected submitBill(): void {
+    if (this.isSubmitting()) return;
     this.submitError.set(null);
     this.success.set(null);
     if (this.billForm.invalid) {
@@ -131,6 +140,7 @@ export class PurchaseBillComponent implements OnInit {
       return;
     }
     const batchLocationName = this.billForm.controls.batchLocationName.value;
+    this.isSubmitting.set(true);
     this.api
       .createBill({
         batchLocationName,
@@ -142,6 +152,7 @@ export class PurchaseBillComponent implements OnInit {
           discountPercent: i.discountPercent,
         })),
       })
+      .pipe(finalize(() => this.isSubmitting.set(false)))
       .subscribe({
         next: (bill) => {
           this.success.set(bill);

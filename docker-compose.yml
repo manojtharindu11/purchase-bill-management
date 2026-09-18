@@ -1,0 +1,67 @@
+services:
+  database:
+    build:
+      context: ./database
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_SA_PASSWORD: ${MSSQL_SA_PASSWORD:?Set MSSQL_SA_PASSWORD in .env}
+    ports:
+      - "1433:1433"
+    volumes:
+      - purchase_bill_sql_data:/var/opt/mssql
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P "$${MSSQL_SA_PASSWORD}" -C -Q "SELECT 1" || exit 1
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 20s
+
+  database-init:
+    build:
+      context: ./database
+    depends_on:
+      database:
+        condition: service_healthy
+    environment:
+      MSSQL_SA_PASSWORD: ${MSSQL_SA_PASSWORD:?Set MSSQL_SA_PASSWORD in .env}
+    entrypoint: ["/bin/bash", "-c"]
+    command:
+      - |
+        set -e
+        migration_count=$$(/opt/mssql-tools18/bin/sqlcmd -S database -U sa -P "$${MSSQL_SA_PASSWORD}" -C -d PurchaseBillManagement -h -1 -W -Q "SET NOCOUNT ON; IF OBJECT_ID(N'dbo.__EFMigrationsHistory') IS NULL SELECT 0 ELSE SELECT COUNT(*) FROM dbo.__EFMigrationsHistory WHERE MigrationId = N'20260918131407_InitialMigration';" 2>/dev/null || true)
+        if [ "$${migration_count}" != "1" ]; then
+          /opt/mssql-tools18/bin/sqlcmd -S database -U sa -P "$${MSSQL_SA_PASSWORD}" -C -d master -Q "IF DB_ID(N'PurchaseBillManagement') IS NULL CREATE DATABASE [PurchaseBillManagement];"
+          /opt/mssql-tools18/bin/sqlcmd -S database -U sa -P "$${MSSQL_SA_PASSWORD}" -C -d PurchaseBillManagement -i /opt/purchase-bill-management/purchase_bill_management.sql
+        fi
+
+  api:
+    build:
+      context: ./backend/PurchaseBillManagement.Api
+    depends_on:
+      database-init:
+        condition: service_completed_successfully
+    environment:
+      ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT:-Production}
+      ASPNETCORE_HTTP_PORTS: "8080"
+      ConnectionStrings__DefaultConnection: Server=database,1433;Database=PurchaseBillManagement;User Id=sa;Password=${MSSQL_SA_PASSWORD:?Set MSSQL_SA_PASSWORD in .env};TrustServerCertificate=True;
+      Jwt__Key: ${JWT_KEY:?Set JWT_KEY in .env}
+      Jwt__Issuer: ${JWT_ISSUER:-PurchaseBillManagement.Api}
+      Jwt__Audience: ${JWT_AUDIENCE:-PurchaseBillManagement.UI}
+      Jwt__ExpiryMinutes: ${JWT_EXPIRY_MINUTES:-120}
+      ExternalApi__BaseUrl: ${EXTERNAL_API_BASE_URL:-https://ez-staging-api.azurewebsites.net}
+      Frontend__Url: ${FRONTEND_URL:-http://localhost:4200}
+    ports:
+      - "5104:8080"
+
+  frontend:
+    build:
+      context: ./frontend/purchase-bill-management-ui
+    depends_on:
+      - api
+    ports:
+      - "4200:80"
+
+volumes:
+  purchase_bill_sql_data:

@@ -44,14 +44,26 @@ builder.Services
     });
 builder.Services.AddAuthorization();
 
-// CORS for the Angular dev server (http + 127.0.0.1 variants).
+// CORS for the Angular dev server and the hosted frontend.
 // NOTE: with proxy.conf.json active, the browser never hits the API
 // cross-origin at all (/api -> proxy -> :5104). This policy is the
 // safety net for direct calls (Swagger, curl, mobile, etc.).
+var allowedOrigins = new List<string>
+{
+    "http://localhost:4200",
+    "http://127.0.0.1:4200"
+};
+
+var frontendUrl = builder.Configuration["Frontend:Url"]?.Trim().TrimEnd('/');
+if (!string.IsNullOrWhiteSpace(frontendUrl))
+{
+    allowedOrigins.Add(frontendUrl);
+}
+
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAngularDevServer", policy =>
-        policy.WithOrigins("http://localhost:4200", "http://127.0.0.1:4200")
+        policy.WithOrigins(allowedOrigins.ToArray())
               .AllowAnyHeader()
               .AllowAnyMethod());
 });

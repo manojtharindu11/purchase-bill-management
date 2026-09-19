@@ -1,6 +1,0 @@
-@PurchaseBillManagement.Api_HostAddress = http://localhost:5104
-
-GET {{PurchaseBillManagement.Api_HostAddress}}/weatherforecast/
-Accept: application/json
-
-###

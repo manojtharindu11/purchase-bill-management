@@ -6,7 +6,6 @@ using Microsoft.OpenApi.Models;
 using PurchaseBillManagement.Api.Data;
 using PurchaseBillManagement.Api.Middleware;
 using PurchaseBillManagement.Api.Services;
-using System.Net.Http.Headers;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,7 +17,7 @@ builder.Services.AddControllers()
     });
 builder.Services.AddEndpointsApiExplorer();
 
-// SQL Server (Docker)
+// SQL Server
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
     ?? throw new InvalidOperationException("Connection string 'DefaultConnection' is not configured.");
 builder.Services.AddDbContext<AppDbContext>(options =>
@@ -45,10 +44,6 @@ builder.Services
     });
 builder.Services.AddAuthorization();
 
-// CORS for the Angular dev server and the hosted frontend.
-// NOTE: with proxy.conf.json active, the browser never hits the API
-// cross-origin at all (/api -> proxy -> :5104). This policy is the
-// safety net for direct calls (Swagger, curl, mobile, etc.).
 var allowedOrigins = new List<string>
 {
     "http://localhost:4200",
@@ -117,8 +112,6 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI(options => options.SwaggerEndpoint("/swagger/v1/swagger.json", "Purchase Bill Management API v1"));
 }
 
-// CORS must run before response-altering middleware and auth so the
-// browser preflight (OPTIONS) from http://localhost:4200 succeeds.
 app.UseCors("AllowAngularDevServer");
 
 app.UseMiddleware<ExceptionHandlingMiddleware>();

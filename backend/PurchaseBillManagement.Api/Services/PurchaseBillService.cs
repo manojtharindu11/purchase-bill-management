@@ -24,8 +24,7 @@ namespace PurchaseBillManagement.Api.Services
         }
 
         public async Task<PurchaseBillResponseDto> CreateAsync(
-            PurchaseBillRequestDto request, string userCode,
-            CancellationToken cancellationToken = default)
+            PurchaseBillRequestDto request, string userCode, CancellationToken cancellationToken = default)
         {
             if (request.Items is null || request.Items.Count == 0)
                 throw new ApiException(StatusCodes.Status400BadRequest, "A purchase bill must contain at least one item.");
